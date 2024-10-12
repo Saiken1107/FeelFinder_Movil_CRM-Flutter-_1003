@@ -1,7 +1,9 @@
+import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
 import 'package:feelfinder_mobile/views/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -66,40 +68,45 @@ class AppDrawer extends StatelessWidget {
                 ),
               ),
             ),
-             DrawerTile(
+            DrawerTile(
                 title: 'Inicio',
                 icon: Icons.home_filled,
                 onTap: () {
-                  // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.homeScreen);
-                  // Navigator.pop(context);
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.homePage);
+                  Navigator.pop(context);
                 }),
             DrawerTile(
                 title: 'Ventas',
                 icon: Icons.home_filled,
                 onTap: () {
-                  // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.homeScreen);
-                  // Navigator.pop(context);
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.ventasPage);
+                  Navigator.pop(context);
                 }),
             DrawerTile(
                 title: 'Clientes',
                 icon: Icons.book,
                 onTap: () {
-                  // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.materiasPage);
-                  // Navigator.pop(context);
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.clientesPage);
+                  Navigator.pop(context);
                 }),
             DrawerTile(
                 title: 'Cotizaciones',
                 icon: Icons.group,
                 onTap: () {
-                  // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.gruposPage);
-                  // Navigator.pop(context);
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.cotizacionesPage);
+                  Navigator.pop(context);
                 }),
             DrawerTile(
                 title: 'Reclamos',
                 icon: Icons.group,
                 onTap: () {
-                  // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.gruposPage);
-                  // Navigator.pop(context);
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.quejasPage);
+                  Navigator.pop(context);
                 }),
             DrawerTile(
               title: 'Cerrar Sesión',

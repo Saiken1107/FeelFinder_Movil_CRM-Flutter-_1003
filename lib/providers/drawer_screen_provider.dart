@@ -1,4 +1,8 @@
+import 'package:feelfinder_mobile/views/screens/drawer_pages/clientes_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/cotizaciones_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/home_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/quejas_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/ventas_page.dart';
 import 'package:flutter/material.dart';
 
 class DrawerScreenProvider extends ChangeNotifier {
@@ -24,25 +28,25 @@ class DrawerScreenProvider extends ChangeNotifier {
         break;
       
       case CustomScreensEnum.ventasPage:
-        // currentScreen = const UsuarioPage();
+        currentScreen = const VentasPage();
         _currentString = "Usuario";
         _currentActions = [];
         break;
 
       case CustomScreensEnum.clientesPage:
-        // currentScreen = const MateriasPage();
+        currentScreen = const ClientesPage();
         _currentString = "Materias";
         _currentActions = [];
         break;
 
       case CustomScreensEnum.cotizacionesPage:
-        // currentScreen = const GruposPage();
+        currentScreen = const CotizacionesPage();
         _currentString = "Grupos";
         _currentActions = [];
         break;
 
       case CustomScreensEnum.quejasPage:
-        // currentScreen = const HorariosPage();
+        currentScreen = const QuejasPage();
         _currentString = "Horarios";
         _currentActions = [];
         break;
