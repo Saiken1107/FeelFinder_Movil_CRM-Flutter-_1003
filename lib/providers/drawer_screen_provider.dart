@@ -26,7 +26,7 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentString = "Inicio";
         _currentActions = [];
         break;
-      
+
       case CustomScreensEnum.ventasPage:
         currentScreen = const VentasPage();
         _currentString = "Usuario";
@@ -46,7 +46,7 @@ class DrawerScreenProvider extends ChangeNotifier {
         break;
 
       case CustomScreensEnum.quejasPage:
-        currentScreen = const QuejasPage();
+        currentScreen = QuejasPage();
         _currentString = "Horarios";
         _currentActions = [];
         break;
@@ -61,4 +61,10 @@ class DrawerScreenProvider extends ChangeNotifier {
   }
 }
 
-enum CustomScreensEnum { homePage, ventasPage, clientesPage, cotizacionesPage, quejasPage}
+enum CustomScreensEnum {
+  homePage,
+  ventasPage,
+  clientesPage,
+  cotizacionesPage,
+  quejasPage
+}
