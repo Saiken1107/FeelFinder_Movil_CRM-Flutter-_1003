@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter/material.dart';
+
 void main() async {
   await _initHive();
-
 
   WidgetsFlutterBinding.ensureInitialized();
 

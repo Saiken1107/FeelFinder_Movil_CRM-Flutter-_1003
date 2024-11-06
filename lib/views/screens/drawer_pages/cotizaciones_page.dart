@@ -33,6 +33,27 @@ class _CotizacionesPageState extends State<CotizacionesPage> {
     }
   }
 
+  void _sendQuote(Quote quote) {
+    // Implementar lógica para enviar la cotización por correo electrónico
+  }
+
+  void _saveAndSendQuote() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      final newQuote = Quote(
+        id: DateTime.now().toString(),
+        productLicense: _productLicense,
+        quantity: _quantity,
+        price: _price,
+        clientName: _clientName,
+      );
+      setState(() {
+        _quotes.add(newQuote);
+      });
+      _sendQuote(newQuote);
+    }
+  }
+
   void _refreshData() async {
     setState(() {
       // Actualización de los datos de las cotizaciones

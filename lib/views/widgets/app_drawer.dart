@@ -17,7 +17,7 @@ class AppDrawer extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF003247),
+              const Color.fromARGB(255, 235, 215, 252),
               Theme.of(context).colorScheme.primary,
               Theme.of(context).colorScheme.primary,
             ],
@@ -106,6 +106,30 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
                       .changeCurrentScreen(CustomScreensEnum.quejasPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Dashboard',
+                icon: Icons.stacked_line_chart,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.dashboardPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Precios',
+                icon: Icons.price_change,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.preciosPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Oportunidades',
+                icon: Icons.handshake_rounded,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.oportunidadesPage);
                   Navigator.pop(context);
                 }),
             DrawerTile(
