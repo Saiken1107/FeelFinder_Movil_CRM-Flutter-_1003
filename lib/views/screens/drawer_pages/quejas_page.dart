@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'nueva_queja_page.dart';
+import 'lista_quejas_page.dart';
 
 class QuejasPage extends StatefulWidget {
   const QuejasPage({super.key});
