@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../models/Oportunidad.dart';
 
 class OportunidadesPage extends StatefulWidget {
+  const OportunidadesPage({super.key});
+
   @override
   _OpportunitiesPageState createState() => _OpportunitiesPageState();
 }
@@ -31,7 +33,7 @@ class _OpportunitiesPageState extends State<OportunidadesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Oportunidades de Venta')),
+      appBar: AppBar(title: const Text('Oportunidades de Venta')),
       body: ListView.builder(
         itemCount: _opportunities.length,
         itemBuilder: (context, index) {
@@ -44,7 +46,7 @@ class _OpportunitiesPageState extends State<OportunidadesPage> {
         onPressed: () {
           // Implementar acción para agregar nueva oportunidad
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Tablero')),
+      appBar: AppBar(title: const Text('Tablero')),
       body: Column(
         children: [
-          Text('Leads Concretados vs Cerrados'),
+          const Text('Leads Concretados vs Cerrados'),
           Expanded(
             child: BarChart(
               BarChartData(

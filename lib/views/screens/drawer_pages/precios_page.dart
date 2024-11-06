@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../models/lista_precios.dart';
 
 class PreciosPage extends StatefulWidget {
+  const PreciosPage({super.key});
+
   @override
   _PriceListPageState createState() => _PriceListPageState();
 }
@@ -31,7 +33,7 @@ class _PriceListPageState extends State<PreciosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Listas de Precios')),
+      appBar: AppBar(title: const Text('Listas de Precios')),
       body: ListView.builder(
         itemCount: _priceLists.length,
         itemBuilder: (context, index) {
@@ -44,7 +46,7 @@ class _PriceListPageState extends State<PreciosPage> {
         onPressed: () {
           // Implementar acción para agregar nueva lista de precios
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

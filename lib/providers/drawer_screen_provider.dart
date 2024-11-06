@@ -2,7 +2,6 @@ import 'package:feelfinder_mobile/views/screens/drawer_pages/clientes_page.dart'
 import 'package:feelfinder_mobile/views/screens/drawer_pages/cotizaciones_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/home_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/quejas_page.dart';
-import 'package:feelfinder_mobile/views/screens/drawer_pages/ventas_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/dashboard_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/oportunidades_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/precios_page.dart';
@@ -50,19 +49,19 @@ class DrawerScreenProvider extends ChangeNotifier {
         break;
 
       case CustomScreensEnum.preciosPage:
-        currentScreen = PreciosPage();
+        currentScreen = const PreciosPage();
         _currentString = "Horarios";
         _currentActions = [];
         break;
 
       case CustomScreensEnum.dashboardPage:
-        currentScreen = DashboardPage();
+        currentScreen = const DashboardPage();
         _currentString = "Horarios";
         _currentActions = [];
         break;
 
       case CustomScreensEnum.oportunidadesPage:
-        currentScreen = OportunidadesPage();
+        currentScreen = const OportunidadesPage();
         _currentString = "Horarios";
         _currentActions = [];
         break;

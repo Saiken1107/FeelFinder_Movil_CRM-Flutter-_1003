@@ -8,11 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-<<<<<<< HEAD
-=======
-import 'package:feelfinder_mobile/main.dart';
-
->>>>>>> 87235f7b0a220485f6f2daf70bd9c4b5a7ac89e6
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
