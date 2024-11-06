@@ -122,6 +122,15 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
               }).toList(),
             ),
             SizedBox(height: 20),
+            // Campo de descripción
+            TextField(
+              decoration: InputDecoration(
+                labelText: "Descripción de la Queja",
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 4,
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Aquí puedes agregar lógica para guardar el nuevo estatus

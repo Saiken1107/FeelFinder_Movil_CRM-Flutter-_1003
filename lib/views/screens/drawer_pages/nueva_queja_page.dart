@@ -1,21 +1,73 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class NuevaQuejaPage extends StatelessWidget {
+class NuevaQuejaPage extends StatefulWidget {
+  @override
+  _NuevaQuejaPageState createState() => _NuevaQuejaPageState();
+}
+
+class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _nombreUsuarioController =
       TextEditingController();
 
-  // Lista de usuarios (ejemplo)
-  final List<String> usuarios = [
-    "Usuario 1",
-    "Usuario 2",
-    "Usuario 3",
-    "Usuario 4"
-  ];
-
+  List<String> usuarios = [];
   final List<String> tiposQueja = ["Mejora", "Queja", "Error", "Sugerencias"];
-  String? tipoSeleccionado = "Mejora"; // Valor predeterminado
-  String? usuarioSeleccionado; // Para almacenar el usuario seleccionado
+  String? tipoSeleccionado = "Mejora";
+  String? usuarioSeleccionado;
+
+  @override
+  void initState() {
+    super.initState();
+    obtenerUsuarios(); // Llamada al método para cargar los usuarios al iniciar
+  }
+
+  Future<List<Map<String, dynamic>>> obtenerUsuarios() async {
+    var client = http.Client();
+    Map<String, dynamic> body = {};
+
+    body.addAll({
+      'noDB': 'BD Encriptada',
+      'idDocente': 'ID Encriptado',
+      'idCE': '0 Encriptado',
+    });
+
+    try {
+      http.Response response = await client.post(
+        Uri.parse('http://localhost:5000/api/Account/sinToken'),
+        body: jsonEncode(body), // convierte el cuerpo a JSON
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> usuariosList =
+            List<Map<String, dynamic>>.from(jsonDecode(response.body));
+
+        // Procesa y desencripta cada usuario
+        int i = 0;
+        for (var usuario in usuariosList) {
+          usuariosList[i]['fullName'] =
+              usuario['fullName']; // Ajusta según el dato que necesites
+          i++;
+        }
+
+        // Convierte explícitamente a List<String> usando map
+        setState(() {
+          usuarios = usuariosList
+              .map<String>((usuario) => usuario['fullName'] as String)
+              .toList();
+        });
+      } else {
+        throw Exception('Error al cargar usuarios');
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      client.close();
+    }
+    return [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +87,10 @@ class NuevaQuejaPage extends StatelessWidget {
                 labelText: "Buscar Usuario",
                 prefixIcon: Icon(Icons.search),
               ),
-              onChanged: (value) {
-                // Aquí puedes implementar la lógica de filtrado si es necesario
-              },
             ),
             SizedBox(height: 10),
 
-            // Selector de usuario
+            // Dropdown con lista de usuarios de la API
             DropdownButtonFormField<String>(
               decoration: InputDecoration(labelText: "Seleccionar Usuario"),
               items: usuarios.map((String usuario) {
@@ -51,7 +100,9 @@ class NuevaQuejaPage extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (value) {
-                usuarioSeleccionado = value; // Guardar usuario seleccionado
+                setState(() {
+                  usuarioSeleccionado = value;
+                });
               },
             ),
             SizedBox(height: 10),
@@ -67,7 +118,9 @@ class NuevaQuejaPage extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (value) {
-                tipoSeleccionado = value; // Actualiza el tipo seleccionado
+                setState(() {
+                  tipoSeleccionado = value;
+                });
               },
             ),
             SizedBox(height: 10),
@@ -89,22 +142,17 @@ class NuevaQuejaPage extends StatelessWidget {
                 String nombreUsuario = _nombreUsuarioController.text;
                 String descripcion = _descripcionController.text;
 
-                // Validaciones
                 if (usuarioSeleccionado == null || descripcion.isEmpty) {
-                  // Aquí puedes mostrar un mensaje de error
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Por favor, complete todos los campos."),
                     ),
                   );
-                  return; // No enviar si los campos están vacíos
+                  return;
                 }
 
-                // Aquí puedes agregar la lógica para guardar en la lista o base de datos
                 print(
                     "Queja de $nombreUsuario: $descripcion (Tipo: $tipoSeleccionado)");
-
-                // Volver a la página anterior
                 Navigator.pop(context);
               },
               icon: Icon(Icons.send),
