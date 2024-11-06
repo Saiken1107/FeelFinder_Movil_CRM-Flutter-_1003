@@ -31,12 +31,6 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentActions = [];
         break;
 
-      case CustomScreensEnum.ventasPage:
-        currentScreen = const VentasPage();
-        _currentString = "Usuario";
-        _currentActions = [];
-        break;
-
       case CustomScreensEnum.clientesPage:
         currentScreen = const ClientesPage();
         _currentString = "Materias";
