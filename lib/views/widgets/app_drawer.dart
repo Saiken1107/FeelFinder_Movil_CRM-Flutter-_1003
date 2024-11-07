@@ -76,6 +76,36 @@ class AppDrawer extends StatelessWidget {
                       .changeCurrentScreen(CustomScreensEnum.homePage);
                   Navigator.pop(context);
                 }),
+            ExpansionTile(
+              title: Row(children: [
+                Icon(Icons.ac_unit_outlined),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Ventas",
+                  style: TextStyle(fontSize: 13),
+                )
+              ]),
+              collapsedTextColor: Colors.white,
+              collapsedIconColor: Colors.white,
+              iconColor: Colors.white,
+              textColor: Colors.white,
+              children: [
+                ListTile(
+                  title: Text('Element 1.2'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: Text('Element 1.3'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
             DrawerTile(
                 title: 'Ventas',
                 icon: Icons.home_filled,

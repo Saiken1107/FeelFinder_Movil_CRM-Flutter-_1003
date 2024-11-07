@@ -1,4 +1,6 @@
+import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -77,14 +79,14 @@ class _HomePageState extends State<HomePage> {
                     texto: "Ventas",
                     icono: Icons.book,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.materiasPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.ventasPage);
                     },
                   ),
                   BotonMenu(
                     texto: "Clientes",
                     icono: Icons.group,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.gruposPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.clientesPage);
                     },
                   ),
                   BotonMenu(
