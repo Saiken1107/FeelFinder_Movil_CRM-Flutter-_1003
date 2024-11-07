@@ -1,4 +1,6 @@
+import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -77,28 +79,33 @@ class _HomePageState extends State<HomePage> {
                     texto: "Ventas",
                     icono: Icons.book,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.materiasPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.ventasPage);
                     },
                   ),
                   BotonMenu(
                     texto: "Clientes",
                     icono: Icons.group,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.gruposPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.clientesPage);
                     },
                   ),
                   BotonMenu(
                     texto: "Cotizaciones",
-                    icono: Icons.lock_clock,
+                    icono: Icons.contact_phone,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.horariosPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(
+                              CustomScreensEnum.cotizacionesPage);
                     },
                   ),
                   BotonMenu(
                     texto: "Quejas",
                     icono: Icons.person,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.alumnosPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.quejasPage);
                     },
                   ),
                 ],

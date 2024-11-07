@@ -94,7 +94,7 @@ class AppDrawer extends StatelessWidget {
                 }),
             DrawerTile(
                 title: 'Cotizaciones',
-                icon: Icons.group,
+                icon: Icons.contact_phone,
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
                       .changeCurrentScreen(CustomScreensEnum.cotizacionesPage);
