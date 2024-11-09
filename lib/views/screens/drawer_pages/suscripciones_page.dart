@@ -4,6 +4,7 @@ import 'package:feelfinder_mobile/controllers/suscripcion_controller.dart';
 import 'package:feelfinder_mobile/views/widgets/suscripcion_form.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 class SuscripcionesPage extends StatefulWidget {
   const SuscripcionesPage({Key? key}) : super(key: key);
 
@@ -134,6 +135,44 @@ class _SuscripcionesPageState extends State<SuscripcionesPage> {
     );
   }
 
+  // Confirmación de eliminación
+  void _confirmarEliminacion(int suscripcionId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("Confirmar eliminación"),
+        content: Text("¿Estás seguro de que deseas eliminar esta suscripción?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text("Cancelar"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              await _eliminarSuscripcion(suscripcionId);
+            },
+            child: Text("Eliminar", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _eliminarSuscripcion(int suscripcionId) async {
+    try {
+      await _suscripcionController.eliminarSuscripcion(suscripcionId);
+      _cargarDatos(); // Refrescar la lista de suscripciones
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Suscripción eliminada exitosamente.")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al eliminar la suscripción.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,9 +187,18 @@ class _SuscripcionesPageState extends State<SuscripcionesPage> {
                   title: Text('Cliente: ${suscripcion["clienteNombre"]}'),
                   subtitle: Text('Plan: ${suscripcion["planNombre"]}'),
                   onTap: () => _mostrarDetallesSuscripcion(suscripcion["id"]),
-                  trailing: IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => _mostrarFormulario(id: suscripcion["id"]),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _mostrarFormulario(id: suscripcion["id"]),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _confirmarEliminacion(suscripcion["id"]),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -162,6 +210,8 @@ class _SuscripcionesPageState extends State<SuscripcionesPage> {
     );
   }
 }
+
+
 
 // Formulario de pago
 class PagoForm extends StatefulWidget {
@@ -194,7 +244,7 @@ class _PagoFormState extends State<PagoForm> {
   }
 
   void _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_formKey.currentState?.validate() ?? false ) {
       final data = {
         "cantidad": double.parse(_cantidadController.text),
         "fechaDePago": _fechaDePago!.toIso8601String(),
