@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
 class PagoService {
-  final String baseUrl = 'http://your_api_url/api/pago';
+  final String baseUrl = 'https://192.168.100.7/api/pago';
 
   Future<String?> _obtenerToken() async {
     var box = await Hive.openBox('login');

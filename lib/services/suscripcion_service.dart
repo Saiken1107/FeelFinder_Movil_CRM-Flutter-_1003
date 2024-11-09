@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
 class SuscripcionService {
-  final String baseUrl = 'http://your_api_url/api/suscripcion';
+  final String baseUrl = 'http://192.168.100.7/api/suscripcion';
 
   Future<String?> _obtenerToken() async {
     var box = await Hive.openBox('login');

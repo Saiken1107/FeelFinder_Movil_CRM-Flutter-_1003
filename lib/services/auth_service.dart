@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
 class AuthService {
-  final String loginUrl = 'http://your_api_url/api/account/login';
+  final String loginUrl = 'http://192.168.100.7/api/account/login';
 
   Future<bool> login(String email, String password) async {
     try {
