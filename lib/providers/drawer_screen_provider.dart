@@ -1,10 +1,13 @@
 import 'package:feelfinder_mobile/views/screens/drawer_pages/clientes_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/cotizaciones_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/home_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/pagos_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/plan_suscripciones_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/quejas_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/dashboard_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/oportunidades_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/precios_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/suscripciones_page.dart';
 
 import 'package:flutter/material.dart';
 
@@ -35,6 +38,24 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentString = "Usuario";
         _currentActions = [];
         break;*/
+
+      case CustomScreensEnum.planesSuscripcionPage:
+        currentScreen = const PlanesSuscripcionesPage();
+        _currentString = "Planes";
+        _currentActions = [];
+        break;
+
+      case CustomScreensEnum.suscripcionesPage:
+        currentScreen = const SuscripcionesPage();
+        _currentString = "Suscripciones";
+        _currentActions = [];
+        break;
+
+      case CustomScreensEnum.pagosPage:
+        currentScreen = const PagosPage();
+        _currentString = "Pagos";
+        _currentActions = [];
+        break;
 
       case CustomScreensEnum.clientesPage:
         currentScreen = const ClientesPage();
@@ -84,7 +105,9 @@ class DrawerScreenProvider extends ChangeNotifier {
 
 enum CustomScreensEnum {
   homePage,
-  ventasPage,
+  planesSuscripcionPage,
+  suscripcionesPage,
+  pagosPage,
   clientesPage,
   cotizacionesPage,
   quejasPage,

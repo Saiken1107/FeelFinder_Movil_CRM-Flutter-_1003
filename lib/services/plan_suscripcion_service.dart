@@ -2,9 +2,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
+import '../helpers/api_helper.dart';
 
 class PlanSuscripcionService {
-  final String baseUrl = 'http://192.168.100.7/api/planSuscripcion';
+  final http.Client client = http.Client();
 
   Future<String?> _obtenerToken() async {
     var box = await Hive.openBox('login');
@@ -19,45 +20,89 @@ class PlanSuscripcionService {
     };
   }
 
+  // Obtener todos los planes
   Future<List<Map<String, dynamic>>> obtenerPlanes() async {
-    final headers = await _getHeaders();
-    final response = await http.get(Uri.parse(baseUrl), headers: headers);
-    if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(json.decode(response.body));
-    } else {
-      throw Exception('Error al cargar los planes de suscripción');
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/planSuscripcion');
+      final response = await client.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(json.decode(response.body));
+      } else {
+        throw Exception('Error al cargar los planes de suscripción');
+      }
+    } catch (e) {
+      print("Exception in obtenerPlanes: $e");
+      return [];
     }
   }
 
-  Future<void> insertarPlan(String nombre, double precio, int duracionMeses) async {
-    final headers = await _getHeaders();
-    final response = await http.post(
-      Uri.parse('$baseUrl/registrar-plan'),
-      headers: headers,
-      body: json.encode({'nombre': nombre, 'precio': precio, 'duracionMeses': duracionMeses}),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Error al insertar plan de suscripción');
+  // Registrar un nuevo plan
+  Future<void> registrarPlan(String nombre, double precio, String descripcion, int duracionMeses) async {
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/planSuscripcion/registrar-plan');
+
+      final body = json.encode({
+        'nombre': nombre,
+        'precio': precio,
+        'descripcion': descripcion,
+        'duracionMeses': duracionMeses,
+      });
+
+      final response = await client.post(uri, headers: headers, body: body);
+
+      if (response.statusCode != 200) {
+        print("Error al registrar plan: ${response.body}");
+        throw Exception('Error al registrar el plan de suscripción');
+      }
+    } catch (e) {
+      print("Exception in registrarPlan: $e");
+      throw Exception('No se pudo registrar el plan de suscripción');
     }
   }
 
-  Future<void> modificarPlan(int id, String nombre, double precio) async {
-    final headers = await _getHeaders();
-    final response = await http.put(
-      Uri.parse('$baseUrl/$id/actualizar'),
-      headers: headers,
-      body: json.encode({'nombre': nombre, 'precio': precio}),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Error al actualizar plan de suscripción');
+  // Actualizar un plan existente
+  Future<void> actualizarPlan(int id, String nombre, double? precio, String? descripcion, int? duracionMeses) async {
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/planSuscripcion/$id/actualizar');
+
+      final body = json.encode({
+        'nombre': nombre,
+        'precio': precio,
+        'descripcion': descripcion,
+        'duracionMeses': duracionMeses,
+      });
+
+      final response = await client.put(uri, headers: headers, body: body);
+
+      if (response.statusCode != 200) {
+        print("Error al actualizar plan: ${response.body}");
+        throw Exception('Error al actualizar el plan de suscripción');
+      }
+    } catch (e) {
+      print("Exception in actualizarPlan: $e");
+      throw Exception('No se pudo actualizar el plan de suscripción');
     }
   }
 
+  // Eliminar un plan
   Future<void> eliminarPlan(int id) async {
-    final headers = await _getHeaders();
-    final response = await http.delete(Uri.parse('$baseUrl/$id/eliminar'), headers: headers);
-    if (response.statusCode != 200) {
-      throw Exception('Error al eliminar plan de suscripción');
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/planSuscripcion/$id/eliminar');
+
+      final response = await client.delete(uri, headers: headers);
+
+      if (response.statusCode != 200) {
+        print("Error al eliminar plan: ${response.body}");
+        throw Exception('Error al eliminar el plan de suscripción');
+      }
+    } catch (e) {
+      print("Exception in eliminarPlan: $e");
+      throw Exception('No se pudo eliminar el plan de suscripción');
     }
   }
 }

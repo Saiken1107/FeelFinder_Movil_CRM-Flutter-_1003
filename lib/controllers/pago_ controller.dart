@@ -4,19 +4,23 @@ import '../services/pago_service.dart';
 class PagoController {
   final PagoService _pagoService = PagoService();
 
-  Future<List<Map<String, dynamic>>> obtenerPagos() {
-    return _pagoService.obtenerPagos();
+  Future<List<Map<String, dynamic>>> obtenerPagos() async {
+    return await _pagoService.obtenerPagos();
   }
 
-  Future<void> insertarPago(double cantidad, DateTime fechaPago, int suscripcionId) {
-    return _pagoService.insertarPago(cantidad, fechaPago, suscripcionId);
+  Future<List<Map<String, dynamic>>> obtenerSuscripciones() async {
+    return await _pagoService.obtenerSuscripciones();
   }
 
-  Future<void> modificarPago(int id, double cantidad) {
-    return _pagoService.modificarPago(id, cantidad);
+  Future<void> registrarPago(Map<String, dynamic> data) async {
+    await _pagoService.registrarPago(data);
   }
 
-  Future<void> eliminarPago(int id) {
-    return _pagoService.eliminarPago(id);
+  Future<void> actualizarPago(int id, Map<String, dynamic> data) async {
+    await _pagoService.actualizarPago(id, data);
+  }
+
+  Future<void> eliminarPago(int id) async {
+    await _pagoService.eliminarPago(id);
   }
 }

@@ -2,9 +2,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
+import '../helpers/api_helper.dart';
 
 class SuscripcionService {
-  final String baseUrl = 'http://192.168.100.7/api/suscripcion';
+  final http.Client client = http.Client();
 
   Future<String?> _obtenerToken() async {
     var box = await Hive.openBox('login');
@@ -21,43 +22,78 @@ class SuscripcionService {
 
   Future<List<Map<String, dynamic>>> obtenerSuscripciones() async {
     final headers = await _getHeaders();
-    final response = await http.get(Uri.parse(baseUrl), headers: headers);
+    final Uri uri = ApiHelper.buildUri('/api/suscripcion');
+    final response = await client.get(uri, headers: headers);
+
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(json.decode(response.body));
     } else {
-      throw Exception('Error al cargar las suscripciones');
+      print("Error en obtenerSuscripciones: ${response.body}");
+      return [];
     }
   }
 
-  Future<void> insertarSuscripcion(int clienteId, int planId, DateTime fechaInicio) async {
+  Future<List<Map<String, dynamic>>> obtenerClientes() async {
     final headers = await _getHeaders();
-    final response = await http.post(
-      Uri.parse('$baseUrl/registrar-suscripcion'),
-      headers: headers,
-      body: json.encode({'clienteId': clienteId, 'planId': planId, 'fechaDeInicio': fechaInicio.toIso8601String()}),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Error al insertar suscripción');
+    final Uri uri = ApiHelper.buildUri('/api/cliente');
+    final response = await client.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(json.decode(response.body));
+    } else {
+      print("Error en obtenerClientes: ${response.body}");
+      return [];
     }
   }
 
-  Future<void> modificarSuscripcion(int id, String estado) async {
+  Future<List<Map<String, dynamic>>> obtenerPlanes() async {
     final headers = await _getHeaders();
-    final response = await http.put(
-      Uri.parse('$baseUrl/$id/actualizar'),
-      headers: headers,
-      body: json.encode({'estado': estado}),
-    );
+    final Uri uri = ApiHelper.buildUri('/api/planSuscripcion');
+    final response = await client.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(json.decode(response.body));
+    } else {
+      print("Error en obtenerPlanes: ${response.body}");
+      return [];
+    }
+  }
+
+  Future<void> registrarSuscripcion(Map<String, dynamic> data) async {
+    final headers = await _getHeaders();
+    final Uri uri = ApiHelper.buildUri('/api/suscripcion/registrar-suscripcion');
+
+    print("Datos que se envían a la API: $data");
+    print("Headers: $headers");
+
+    final response = await client.post(uri, headers: headers, body: json.encode(data));
+
     if (response.statusCode != 200) {
-      throw Exception('Error al actualizar suscripción');
+      throw Exception('Error al registrar la suscripción: ${response.body}');
+    } else {
+      print("Suscripción registrada con éxito en la API.");
+    }
+  }
+
+  Future<void> actualizarSuscripcion(int id, Map<String, dynamic> data) async {
+    final headers = await _getHeaders();
+    final Uri uri = ApiHelper.buildUri('/api/suscripcion/$id/actualizar');
+
+    final response = await client.put(uri, headers: headers, body: json.encode(data));
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al actualizar la suscripción');
     }
   }
 
   Future<void> eliminarSuscripcion(int id) async {
     final headers = await _getHeaders();
-    final response = await http.delete(Uri.parse('$baseUrl/$id/eliminar'), headers: headers);
+    final Uri uri = ApiHelper.buildUri('/api/suscripcion/$id/eliminar');
+
+    final response = await client.delete(uri, headers: headers);
+
     if (response.statusCode != 200) {
-      throw Exception('Error al eliminar suscripción');
+      throw Exception('Error al eliminar la suscripción');
     }
   }
 }
