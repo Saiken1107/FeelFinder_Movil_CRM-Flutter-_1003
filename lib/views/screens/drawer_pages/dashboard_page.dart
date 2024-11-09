@@ -1,6 +1,5 @@
-// pages/dashboard_page.dart
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});

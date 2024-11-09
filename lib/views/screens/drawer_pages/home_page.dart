@@ -69,7 +69,47 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: _isAuthenticated ? DashboardPage() : Container(),
+              child: GridView(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisExtent: MediaQuery.of(context).size.height / 3.8,
+                ),
+                children: [
+                  BotonMenu(
+                    texto: "Ventas",
+                    icono: Icons.book,
+                    onTap: () {
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.ventasPage);
+                    },
+                  ),
+                  BotonMenu(
+                    texto: "Clientes",
+                    icono: Icons.group,
+                    onTap: () {
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.clientesPage);
+                    },
+                  ),
+                  BotonMenu(
+                    texto: "Cotizaciones",
+                    icono: Icons.contact_phone,
+                    onTap: () {
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(
+                              CustomScreensEnum.cotizacionesPage);
+                    },
+                  ),
+                  BotonMenu(
+                    texto: "Quejas",
+                    icono: Icons.person,
+                    onTap: () {
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.quejasPage);
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
