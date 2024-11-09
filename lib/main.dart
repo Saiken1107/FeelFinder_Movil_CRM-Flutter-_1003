@@ -5,9 +5,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  await _initHive();
-
-
+  await Hive.initFlutter();
+  await Hive.openBox('login');
+  
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(ChangeNotifierProvider(
