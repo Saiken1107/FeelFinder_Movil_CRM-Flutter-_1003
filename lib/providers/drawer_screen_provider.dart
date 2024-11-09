@@ -3,6 +3,8 @@ import 'package:feelfinder_mobile/views/screens/drawer_pages/cotizaciones_page.d
 import 'package:feelfinder_mobile/views/screens/drawer_pages/home_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/quejas_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/ventas_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/empresas_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/actividades_page.dart';
 import 'package:flutter/material.dart';
 
 class DrawerScreenProvider extends ChangeNotifier {
@@ -26,7 +28,7 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentString = "Inicio";
         _currentActions = [];
         break;
-      
+
       case CustomScreensEnum.ventasPage:
         currentScreen = const VentasPage();
         _currentString = "Usuario";
@@ -51,6 +53,16 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentActions = [];
         break;
 
+      case CustomScreensEnum.empresasPage:
+        currentScreen = EmpresasPage();
+        _currentString = "Empresas";
+        _currentActions = [];
+        break;
+      case CustomScreensEnum.actividadespage:
+        currentScreen = ActividadesPage();
+        _currentString = "Actividades";
+        _currentActions = [];
+        break;
       default:
         currentScreen = const HomePage();
         _currentString = "Inicio";
@@ -61,4 +73,12 @@ class DrawerScreenProvider extends ChangeNotifier {
   }
 }
 
-enum CustomScreensEnum { homePage, ventasPage, clientesPage, cotizacionesPage, quejasPage}
+enum CustomScreensEnum {
+  homePage,
+  ventasPage,
+  clientesPage,
+  cotizacionesPage,
+  quejasPage,
+  empresasPage,
+  actividadespage
+}

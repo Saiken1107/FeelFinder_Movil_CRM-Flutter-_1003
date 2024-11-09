@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -99,6 +101,23 @@ class _HomePageState extends State<HomePage> {
                     icono: Icons.person,
                     onTap: () {
                       // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.alumnosPage);
+                    },
+                  ),
+                  BotonMenu(
+                    texto: "Empresas",
+                    icono: Icons.person,
+                    onTap: () {
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.empresasPage);
+                    },
+                  ),
+                  BotonMenu(
+                    texto: "Actividad",
+                    icono: Icons.person,
+                    onTap: () {
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(
+                              CustomScreensEnum.actividadespage);
                     },
                   ),
                 ],
