@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:feel_finder_movil_1003-main/lib/models/quote_model.dart';
 import 'package:feelfinder_mobile/models/quote_model.dart';
 
 class CotizacionesPage extends StatefulWidget {
@@ -69,9 +68,6 @@ class _CotizacionesPageState extends State<CotizacionesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cotizaciones'),
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

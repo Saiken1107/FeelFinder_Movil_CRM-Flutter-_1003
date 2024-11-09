@@ -8,26 +8,33 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tablero')),
-      body: Column(
-        children: [
-          const Text('Leads Concretados vs Cerrados'),
-          Expanded(
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                barGroups: _createSampleData(),
-                borderData: FlBorderData(
-                  show: false,
-                ),
-                titlesData: FlTitlesData(
-                  leftTitles: SideTitles(showTitles: true),
-                  bottomTitles: SideTitles(showTitles: true),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Leads Concretados vs Cerrados',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16.0),
+            Expanded(
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  barGroups: _createSampleData(),
+                  borderData: FlBorderData(
+                    show: false,
+                  ),
+                  titlesData: FlTitlesData(
+                    leftTitles: SideTitles(showTitles: true),
+                    bottomTitles: SideTitles(showTitles: true),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

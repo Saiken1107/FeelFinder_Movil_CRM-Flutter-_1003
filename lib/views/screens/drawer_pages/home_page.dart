@@ -1,6 +1,7 @@
 import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dashboard_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,18 +10,17 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-// final Box _boxLogin = Hive.box("login");
-// String _stringNombre = "";
-
 class _HomePageState extends State<HomePage> {
-  //final ejemploPeticionController = EjemploHTTPGetController();
-  //UsuarioController usuarioController = UsuarioController();
+  bool _isAuthenticated = false;
+  String _userName = '';
 
   void _refreshData() async {
     // final data = await usuarioController.obtenerUnUsuario(_boxLogin.get("userId"));
 
     setState(() {
       // _stringNombre = data[0]['nombre'];
+      _userName = 'Usuario'; // Asigna el nombre del usuario aquí
+      _isAuthenticated = true; // Actualiza el estado de autenticación
     });
   }
 
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Bienvenido",
+                    "Bienvenido, $_userName",
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w300,
@@ -69,47 +69,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: GridView(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: MediaQuery.of(context).size.height / 3.8,
-                ),
-                children: [
-                  BotonMenu(
-                    texto: "Ventas",
-                    icono: Icons.book,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false)
-                          .changeCurrentScreen(CustomScreensEnum.ventasPage);
-                    },
-                  ),
-                  BotonMenu(
-                    texto: "Clientes",
-                    icono: Icons.group,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false)
-                          .changeCurrentScreen(CustomScreensEnum.clientesPage);
-                    },
-                  ),
-                  BotonMenu(
-                    texto: "Cotizaciones",
-                    icono: Icons.contact_phone,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false)
-                          .changeCurrentScreen(
-                              CustomScreensEnum.cotizacionesPage);
-                    },
-                  ),
-                  BotonMenu(
-                    texto: "Quejas",
-                    icono: Icons.person,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false)
-                          .changeCurrentScreen(CustomScreensEnum.quejasPage);
-                    },
-                  ),
-                ],
-              ),
+              child: _isAuthenticated ? DashboardPage() : Container(),
             ),
           ],
         ),
@@ -130,7 +90,7 @@ class BotonMenu extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       child: ElevatedButton(
-        onPressed: onTap, //Aqui se inserta la funcion recibida como argumento
+        onPressed: onTap,
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),

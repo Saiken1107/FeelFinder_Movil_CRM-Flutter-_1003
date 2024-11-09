@@ -48,22 +48,10 @@ class AppDrawer extends StatelessWidget {
                     const SizedBox(
                       width: 10,
                     ),
-                    GradientText('Feel Finder',
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        gradientDirection: GradientDirection.ttb,
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withBlue(50)
-                              .withRed(50)
-                              .withGreen(50),
-                        ])
+                    Image.asset(
+                      'assets/images/Feelfinder2.png',
+                      height: 150,
+                    )
                   ],
                 ),
               ),
@@ -106,14 +94,6 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
                       .changeCurrentScreen(CustomScreensEnum.quejasPage);
-                  Navigator.pop(context);
-                }),
-            DrawerTile(
-                title: 'Dashboard',
-                icon: Icons.stacked_line_chart,
-                onTap: () {
-                  Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.dashboardPage);
                   Navigator.pop(context);
                 }),
             DrawerTile(
