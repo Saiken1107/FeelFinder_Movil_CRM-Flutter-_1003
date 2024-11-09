@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
     final token = box.get('token');
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        routes: {
+        routes: const {
           //Estas rutas son para las pantallas que no estan en el drawer
           // HorariosAsistencias.routeName: (context) => const HorariosAsistencias(),
         },

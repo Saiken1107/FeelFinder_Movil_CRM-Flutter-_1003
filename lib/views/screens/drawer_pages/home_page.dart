@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w300,
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                 ],
@@ -91,16 +91,19 @@ class _HomePageState extends State<HomePage> {
                   ),
                   BotonMenu(
                     texto: "Cotizaciones",
-                    icono: Icons.lock_clock,
+                    icono: Icons.contact_phone,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.horariosPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(
+                              CustomScreensEnum.cotizacionesPage);
                     },
                   ),
                   BotonMenu(
                     texto: "Quejas",
                     icono: Icons.person,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.alumnosPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.quejasPage);
                     },
                   ),
                 ],

@@ -6,18 +6,18 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({Key? key}) : super(key: key);
+  const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final Box _boxLogin = Hive.box("login");
+    final Box boxLogin0 = Hive.box("login");
 
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF003247),
+              const Color.fromARGB(255, 235, 215, 252),
               Theme.of(context).colorScheme.primary,
               Theme.of(context).colorScheme.primary,
             ],
@@ -124,7 +124,7 @@ class AppDrawer extends StatelessWidget {
                 }),
             DrawerTile(
                 title: 'Cotizaciones',
-                icon: Icons.group,
+                icon: Icons.contact_phone,
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
                       .changeCurrentScreen(CustomScreensEnum.cotizacionesPage);
@@ -136,6 +136,30 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
                       .changeCurrentScreen(CustomScreensEnum.quejasPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Dashboard',
+                icon: Icons.stacked_line_chart,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.dashboardPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Precios',
+                icon: Icons.price_change,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.preciosPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Oportunidades',
+                icon: Icons.handshake_rounded,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.oportunidadesPage);
                   Navigator.pop(context);
                 }),
             DrawerTile(
@@ -164,8 +188,10 @@ class AppDrawer extends StatelessWidget {
 
 class DrawerTile extends StatelessWidget {
   const DrawerTile(
-      {Key? key, required this.title, required this.icon, required this.onTap})
-      : super(key: key);
+      {super.key,
+      required this.title,
+      required this.icon,
+      required this.onTap});
   final String title;
   final IconData icon;
   final VoidCallback onTap;
