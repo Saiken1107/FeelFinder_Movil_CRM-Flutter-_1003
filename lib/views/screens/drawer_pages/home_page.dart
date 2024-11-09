@@ -1,7 +1,6 @@
 import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dashboard_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,17 +9,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+// final Box _boxLogin = Hive.box("login");
+// String _stringNombre = "";
+
 class _HomePageState extends State<HomePage> {
-  bool _isAuthenticated = false;
-  String _userName = '';
+  //final ejemploPeticionController = EjemploHTTPGetController();
+  //UsuarioController usuarioController = UsuarioController();
 
   void _refreshData() async {
     // final data = await usuarioController.obtenerUnUsuario(_boxLogin.get("userId"));
 
     setState(() {
       // _stringNombre = data[0]['nombre'];
-      _userName = 'Usuario'; // Asigna el nombre del usuario aquí
-      _isAuthenticated = true; // Actualiza el estado de autenticación
     });
   }
 
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Bienvenido, $_userName",
+                    "Bienvenido",
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w300,
@@ -130,7 +130,7 @@ class BotonMenu extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       child: ElevatedButton(
-        onPressed: onTap,
+        onPressed: onTap, //Aqui se inserta la funcion recibida como argumento
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),

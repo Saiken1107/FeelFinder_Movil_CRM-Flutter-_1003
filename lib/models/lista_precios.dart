@@ -1,10 +1,7 @@
 class PriceList {
   final String id;
-
   final String name;
-
   final double price;
-
   final List<double> prices;
 
   PriceList({
