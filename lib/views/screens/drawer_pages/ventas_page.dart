@@ -7,7 +7,6 @@ class VentasPage extends StatefulWidget {
   State<VentasPage> createState() => _VentasPageState();
 }
 
-
 class _VentasPageState extends State<VentasPage> {
   void _refreshData() async {
     // final data = await usuarioController.obtenerUnUsuario(_boxLogin.get("userId"));
@@ -26,11 +25,9 @@ class _VentasPageState extends State<VentasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Text("Ventas")
-      )
-    );
+        body: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: const Text("Ventas")));
   }
 }

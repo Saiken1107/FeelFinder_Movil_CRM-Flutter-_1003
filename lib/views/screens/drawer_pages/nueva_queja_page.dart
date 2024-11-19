@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:feelfinder_mobile/controllers/quejas_controller.dart';
 
 class NuevaQuejaPage extends StatefulWidget {
   @override
@@ -14,59 +13,22 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
 
   List<String> usuarios = [];
   final List<String> tiposQueja = ["Mejora", "Queja", "Error", "Sugerencias"];
+  final List<String> selecionaUsuario = [
+    "juan pablo",
+    "Maira Martines",
+    "Carmen luz",
+    "Roberto Sanchez"
+  ];
+
   String? tipoSeleccionado = "Mejora";
   String? usuarioSeleccionado;
+  String? tipoSeleccionadoUsuario = "Juna pablo";
+  final QuejaController _quejaController = QuejaController();
 
   @override
   void initState() {
     super.initState();
-    obtenerUsuarios(); // Llamada al método para cargar los usuarios al iniciar
-  }
-
-  Future<List<Map<String, dynamic>>> obtenerUsuarios() async {
-    var client = http.Client();
-    Map<String, dynamic> body = {};
-
-    body.addAll({
-      'noDB': 'BD Encriptada',
-      'idDocente': 'ID Encriptado',
-      'idCE': '0 Encriptado',
-    });
-
-    try {
-      http.Response response = await client.post(
-        Uri.parse('http://localhost:5000/api/Account/sinToken'),
-        body: jsonEncode(body), // convierte el cuerpo a JSON
-        headers: {"Content-Type": "application/json"},
-      );
-
-      if (response.statusCode == 200) {
-        List<Map<String, dynamic>> usuariosList =
-            List<Map<String, dynamic>>.from(jsonDecode(response.body));
-
-        // Procesa y desencripta cada usuario
-        int i = 0;
-        for (var usuario in usuariosList) {
-          usuariosList[i]['fullName'] =
-              usuario['fullName']; // Ajusta según el dato que necesites
-          i++;
-        }
-
-        // Convierte explícitamente a List<String> usando map
-        setState(() {
-          usuarios = usuariosList
-              .map<String>((usuario) => usuario['fullName'] as String)
-              .toList();
-        });
-      } else {
-        throw Exception('Error al cargar usuarios');
-      }
-    } catch (e) {
-      print("Error: $e");
-    } finally {
-      client.close();
-    }
-    return [];
+    // Llamada al método para cargar los usuarios al iniciar
   }
 
   @override
@@ -80,7 +42,6 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Campo de búsqueda de usuario
             TextField(
               controller: _nombreUsuarioController,
               decoration: InputDecoration(
@@ -90,18 +51,38 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
             ),
             SizedBox(height: 10),
 
-            // Dropdown con lista de usuarios de la API
+            // Dropdown con lista de usuarios
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: "Seleccionar Usuario"),
-              items: usuarios.map((String usuario) {
+              decoration:
+                  InputDecoration(labelText: "Seleciona Usuario  Registra"),
+              value: tipoSeleccionadoUsuario,
+              items: selecionaUsuario.map((String tipo) {
                 return DropdownMenuItem<String>(
-                  value: usuario,
-                  child: Text(usuario),
+                  value: tipo,
+                  child: Text(tipo),
                 );
               }).toList(),
               onChanged: (value) {
                 setState(() {
-                  usuarioSeleccionado = value;
+                  tipoSeleccionadoUsuario = value;
+                });
+              },
+            ),
+            SizedBox(height: 10),
+
+            // Dropdown con lista de usuarios
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(labelText: "Seleciona Usuario"),
+              value: tipoSeleccionadoUsuario,
+              items: selecionaUsuario.map((String tipo) {
+                return DropdownMenuItem<String>(
+                  value: tipo,
+                  child: Text(tipo),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  tipoSeleccionadoUsuario = value;
                 });
               },
             ),
@@ -138,8 +119,7 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
 
             // Botón de enviar
             ElevatedButton.icon(
-              onPressed: () {
-                String nombreUsuario = _nombreUsuarioController.text;
+              onPressed: () async {
                 String descripcion = _descripcionController.text;
 
                 if (usuarioSeleccionado == null || descripcion.isEmpty) {
@@ -151,8 +131,29 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
                   return;
                 }
 
-                print(
-                    "Queja de $nombreUsuario: $descripcion (Tipo: $tipoSeleccionado)");
+                try {
+                  // Llamamos al método del controlador para registrar la queja
+                  await _quejaController.registrarQueja(
+                    1, // ID del usuario que solicita (esto debe ser dinámico)
+                    1, // ID del usuario que necesita (esto también puede ser dinámico)
+                    descripcion,
+                    tiposQueja.indexOf(tipoSeleccionado!), // Tipo de queja
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Queja registrada con éxito."),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error al registrar la queja."),
+                    ),
+                  );
+                }
+
+                // Regresar a la pantalla anterior
                 Navigator.pop(context);
               },
               icon: Icon(Icons.send),

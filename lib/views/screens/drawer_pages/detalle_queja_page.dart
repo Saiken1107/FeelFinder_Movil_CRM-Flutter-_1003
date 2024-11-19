@@ -17,13 +17,9 @@ class DetalleQuejaPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(queja.imagenUrl!),
-              radius: 50,
-            ),
             SizedBox(height: 16),
             Text(
-              "Usuario: ${queja.nombreUsuario}",
+              "Usuario: ${queja.idUsuarioNecesita}",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
@@ -33,7 +29,7 @@ class DetalleQuejaPage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              "Tipo de Suscripción: ${queja.tipoSuscripcion}",
+              "Tipo de Suscripción: ${queja.idUsuarioSolicita}",
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 8),
