@@ -2,9 +2,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
+import '../helpers/api_helper.dart';
 
 class PagoService {
-  final String baseUrl = 'https://192.168.100.7/api/pago';
+  final http.Client client = http.Client();
 
   Future<String?> _obtenerToken() async {
     var box = await Hive.openBox('login');
@@ -21,43 +22,60 @@ class PagoService {
 
   Future<List<Map<String, dynamic>>> obtenerPagos() async {
     final headers = await _getHeaders();
-    final response = await http.get(Uri.parse(baseUrl), headers: headers);
+    final Uri uri = ApiHelper.buildUri('/api/pago');
+    final response = await client.get(uri, headers: headers);
+
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(json.decode(response.body));
     } else {
-      throw Exception('Error al cargar los pagos');
+      print("Error en obtenerPagos: ${response.body}");
+      return [];
     }
   }
 
-  Future<void> insertarPago(double cantidad, DateTime fechaPago, int suscripcionId) async {
+  Future<List<Map<String, dynamic>>> obtenerSuscripciones() async {
     final headers = await _getHeaders();
-    final response = await http.post(
-      Uri.parse('$baseUrl/registrar-pago'),
-      headers: headers,
-      body: json.encode({'cantidad': cantidad, 'fechaDePago': fechaPago.toIso8601String(), 'suscripcionId': suscripcionId}),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Error al insertar pago');
+    final Uri uri = ApiHelper.buildUri('/api/suscripcion');
+    final response = await client.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(json.decode(response.body));
+    } else {
+      print("Error en obtenerSuscripciones: ${response.body}");
+      return [];
     }
   }
 
-  Future<void> modificarPago(int id, double cantidad) async {
+  Future<void> registrarPago(Map<String, dynamic> data) async {
     final headers = await _getHeaders();
-    final response = await http.put(
-      Uri.parse('$baseUrl/$id/actualizar'),
-      headers: headers,
-      body: json.encode({'cantidad': cantidad}),
-    );
+    final Uri uri = ApiHelper.buildUri('/api/pago/registrar-pago');
+
+    final response = await client.post(uri, headers: headers, body: json.encode(data));
+
     if (response.statusCode != 200) {
-      throw Exception('Error al actualizar pago');
+      throw Exception('Error al registrar el pago');
+    }
+  }
+
+  Future<void> actualizarPago(int id, Map<String, dynamic> data) async {
+    final headers = await _getHeaders();
+    final Uri uri = ApiHelper.buildUri('/api/pago/$id/actualizar');
+
+    final response = await client.put(uri, headers: headers, body: json.encode(data));
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al actualizar el pago');
     }
   }
 
   Future<void> eliminarPago(int id) async {
     final headers = await _getHeaders();
-    final response = await http.delete(Uri.parse('$baseUrl/$id/eliminar'), headers: headers);
+    final Uri uri = ApiHelper.buildUri('/api/pago/$id/eliminar');
+
+    final response = await client.delete(uri, headers: headers);
+
     if (response.statusCode != 200) {
-      throw Exception('Error al eliminar pago');
+      throw Exception('Error al eliminar el pago');
     }
   }
 }

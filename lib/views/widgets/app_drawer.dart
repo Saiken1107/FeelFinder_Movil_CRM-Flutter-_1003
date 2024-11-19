@@ -10,8 +10,6 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Box boxLogin0 = Hive.box("login");
-
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
@@ -77,8 +75,8 @@ class AppDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 }),
             ExpansionTile(
-              title: Row(children: [
-                Icon(Icons.ac_unit_outlined),
+              title: const Row(children: [
+                Icon(Icons.account_balance_wallet_rounded),
                 SizedBox(
                   width: 10,
                 ),
@@ -92,28 +90,27 @@ class AppDrawer extends StatelessWidget {
               iconColor: Colors.white,
               textColor: Colors.white,
               children: [
-                ListTile(
-                  title: Text('Element 1.2'),
+                DrawerTile(
+                  icon: Icons.list,
+                  title:"Suscripciones",
                   onTap: () {
+                    Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.suscripcionesPage);
                     Navigator.pop(context);
                   },
                 ),
-                ListTile(
-                  title: Text('Element 1.3'),
+                DrawerTile(
+                  icon: Icons.abc,
+                  title: 
+                  "Planes Suscripciones",
                   onTap: () {
+                    Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.planesSuscripcionPage);
                     Navigator.pop(context);
                   },
                 ),
               ],
             ),
-            DrawerTile(
-                title: 'Ventas',
-                icon: Icons.home_filled,
-                onTap: () {
-                  Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.ventasPage);
-                  Navigator.pop(context);
-                }),
             DrawerTile(
                 title: 'Clientes',
                 icon: Icons.book,
