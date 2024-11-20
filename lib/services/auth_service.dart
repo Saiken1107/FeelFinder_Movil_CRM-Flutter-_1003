@@ -1,50 +1,54 @@
-// auth_service.dart
 import 'dart:convert';
+import 'package:feelfinder_mobile/helpers/api_helper.dart';
 import 'package:http/http.dart' as http;
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AuthService {
-  final String loginUrl = 'http://192.168.100.7/api/account/login';
+  final String _loginEndpoint = "api/account/login";
 
-  Future<bool> login(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse(loginUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({'email': email, 'password': password}),
-      );
+  Future<String> login(String email, String password) async {
+    final client = http.Client();
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final token = data['token'];
-        final refreshToken = data['refreshToken'];
+    final response = await client.post(
+      Uri.https(ApiHelper.baseUrl, _loginEndpoint),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"email": email, "password": password}),
+    );
 
-        // Almacenar el token en Hive
-        var box = await Hive.openBox('login');
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+
+      if (responseData['isSuccess'] == true) {
+        final token = responseData['token'];
+        final expiration = DateTime.now().add(Duration(seconds: 3600)); // 1 hora
+
+        var box = await Hive.openBox('auth');
         await box.put('token', token);
-        await box.put('refreshToken', refreshToken);
+        await box.put('tokenExpiration', expiration.toIso8601String());
 
-        return true;
+        return "Login exitoso!";
       } else {
-        print('Login failed: ${response.body}');
-        return false;
+        return responseData['message'] ?? "Error de login.";
       }
-    } catch (e) {
-      print('Error during login: $e');
-      return false;
+    } else {
+      return "Error al iniciar sesión: ${response.statusCode}";
     }
   }
 
-  Future<void> logout() async {
-    var box = await Hive.openBox('login');
-    await box.delete('token');
-    await box.delete('refreshToken');
+  Future<String?> getToken() async {
+    var box = await Hive.openBox('auth');
+    final token = box.get('token');
+    final expiration = box.get('tokenExpiration');
+
+    if (expiration != null && DateTime.parse(expiration).isBefore(DateTime.now())) {
+      return null; // El token ha expirado
+    }
+    return token;
   }
 
-  Future<String?> getToken() async {
-    var box = await Hive.openBox('login');
-    return box.get('token');
+  Future<void> logout() async {
+    var box = await Hive.openBox('auth');
+    await box.delete('token');
+    await box.delete('tokenExpiration');
   }
 }
