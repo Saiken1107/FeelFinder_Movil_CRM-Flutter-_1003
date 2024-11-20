@@ -1,3 +1,4 @@
+import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w300,
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                 ],
@@ -79,21 +80,24 @@ class _HomePageState extends State<HomePage> {
                     texto: "Ventas",
                     icono: Icons.book,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.materiasPage);
+                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.ventasPage);
                     },
                   ),
                   BotonMenu(
                     texto: "Clientes",
                     icono: Icons.group,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.gruposPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.clientesPage);
                     },
                   ),
                   BotonMenu(
                     texto: "Cotizaciones",
-                    icono: Icons.lock_clock,
+                    icono: Icons.contact_phone,
                     onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.horariosPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(
+                              CustomScreensEnum.cotizacionesPage);
                     },
                   ),
                   BotonMenu(
@@ -109,15 +113,6 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {
                       Provider.of<DrawerScreenProvider>(context, listen: false)
                           .changeCurrentScreen(CustomScreensEnum.empresasPage);
-                    },
-                  ),
-                  BotonMenu(
-                    texto: "Actividad",
-                    icono: Icons.person,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false)
-                          .changeCurrentScreen(
-                              CustomScreensEnum.actividadespage);
                     },
                   ),
                 ],
