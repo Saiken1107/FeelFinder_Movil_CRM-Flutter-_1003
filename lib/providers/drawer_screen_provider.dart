@@ -8,7 +8,9 @@ import 'package:feelfinder_mobile/views/screens/drawer_pages/dashboard_page.dart
 import 'package:feelfinder_mobile/views/screens/drawer_pages/oportunidades_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/precios_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/suscripciones_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/ventas_page.dart';
 
+import 'package:feelfinder_mobile/views/screens/drawer_pages/empresas_page.dart';
 import 'package:flutter/material.dart';
 
 class DrawerScreenProvider extends ChangeNotifier {
@@ -33,8 +35,8 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentActions = [];
         break;
 
-      /*case CustomScreensEnum.ventasPage:
-        currentScreen = ventasPage();
+      /* case CustomScreensEnum.ventasPage:
+        currentScreen = const ventasPage();
         _currentString = "Usuario";
         _currentActions = [];
         break;*/
@@ -93,6 +95,11 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentActions = [];
         break;
 
+      case CustomScreensEnum.empresasPage:
+        currentScreen = EmpresasPage();
+        _currentString = "Empresas";
+        _currentActions = [];
+        break;
       default:
         currentScreen = const HomePage();
         _currentString = "Inicio";
@@ -105,13 +112,19 @@ class DrawerScreenProvider extends ChangeNotifier {
 
 enum CustomScreensEnum {
   homePage,
+
   planesSuscripcionPage,
   suscripcionesPage,
   pagosPage,
+
   clientesPage,
+
   cotizacionesPage,
+
   quejasPage,
   dashboardPage,
   preciosPage,
   oportunidadesPage,
+  empresasPage,
+  actividadespage
 }
