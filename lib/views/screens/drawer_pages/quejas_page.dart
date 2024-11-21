@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:feelfinder_mobile/controllers/quejas_controller.dart';
 import 'nueva_queja_page.dart';
+import 'detalle_queja_page.dart';
 
-// Mover la clase Queja fuera de QuejasPage
 class Queja {
   int id;
   int idUsuarioSolicita;
@@ -19,6 +19,16 @@ class Queja {
     required this.estatus,
     required this.tipo,
   });
+  factory Queja.fromMap(Map<String, dynamic> map) {
+    return Queja(
+      id: map['id'] ?? 0,
+      idUsuarioSolicita: map['idUsuarioSolicita'] ?? 0,
+      idUsuarioNecesita: map['idUsuarioNecesita'] ?? 0,
+      descripcion: map['descripcion'] ?? 'Sin descripción',
+      estatus: map['estatus'] ?? 0,
+      tipo: map['tipo'] ?? 0,
+    );
+  }
 }
 
 class QuejasPage extends StatelessWidget {
@@ -32,21 +42,14 @@ class QuejasPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        // Aquí deberías tener la lógica para obtener datos
-        future: _quejaController
-            .obtenerQuejas(), // Consumimos el método para obtener las quejas
+        future: _quejaController.obtenerQuejas(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-                child:
-                    CircularProgressIndicator()); // Muestra un indicador de carga
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-                child: Text(
-                    'Error: ${snapshot.error}')); // Muestra el error si ocurre
+            return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-                child: Text('No hay quejas registradas.')); // Si no hay datos
+            return Center(child: Text('No hay quejas registradas.'));
           } else {
             final quejas = snapshot.data!;
 
@@ -70,11 +73,18 @@ class QuejasPage extends StatelessWidget {
                           SizedBox(height: 5),
                           Text(
                               "Usuario: ${quejas[index]['idUsuarioSolicita']}"),
-                          Text("Estatus: ${quejas[index]['descripcion']}"),
+                          Text("Estatus: ${quejas[index]['estatus']}"),
                         ],
                       ),
                       onTap: () {
-                        // Código para navegar a los detalles de la queja si es necesario
+                        final queja = Queja.fromMap(quejas[index]);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetalleQuejaPage(queja: queja),
+                          ),
+                        );
                       },
                     ),
                   ),

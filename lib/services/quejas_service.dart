@@ -15,7 +15,7 @@ class QuejaService {
     try {
       // Construir la URL completa de la API
       final Uri uri = ApiHelper.buildUri('/api/Queja/todas');
-
+      print("obtenerQuejas: $uri");
       // Aquí asumimos que 'client' y 'headers' están previamente definidos en tu clase
       final response = await http.get(uri,
           headers:
@@ -23,6 +23,7 @@ class QuejaService {
 
       // Verificar el código de estado de la respuesta
       if (response.statusCode == 200) {
+        print("obtenerQuejas respuesta: $response.body");
         // Si la respuesta es 200 OK, decodificar el cuerpo JSON en una lista de mapas
         List<Map<String, dynamic>> quejas =
             List<Map<String, dynamic>>.from(json.decode(response.body));
@@ -37,7 +38,8 @@ class QuejaService {
         throw Exception('Error al cargar las quejas');
       }
     } catch (e) {
-      // Capturar cualquier excepción y mostrar el error
+      // Capturar cualquier excepción y mostrar el error https://authapi90320241027235706.azurewebsites.net/api/account/login
+
       print("Exception en obtenerQuejas: $e");
       return []; // Retorna una lista vacía si ocurre un error
     }
