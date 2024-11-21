@@ -21,15 +21,16 @@ class QuejaController {
           idUsuarioSolicita, idUsuarioNecesita, descripcion, tipo);
     } catch (e) {
       print("Error en registrarQueja: $e");
-      throw Exception('No se pudo registrar la queja');
+      throw Exception('No se pudo registrar la queja ');
     }
   }
 
   // Actualizar una queja existente
-  Future<void> actualizarQueja(
-      int idQueja, String descripcion, int tipo, int estatus) async {
+  Future<void> actualizarQueja(int idQueja, String descripcion, int tipo,
+      int estatus, int idUsuarioSolicita, int idUsuarioNecesita) async {
     try {
-      await _quejaService.actualizarQueja(idQueja, descripcion, tipo, estatus);
+      await _quejaService.actualizarQueja(idQueja, descripcion, tipo, estatus,
+          idUsuarioSolicita, idUsuarioNecesita);
     } catch (e) {
       print("Error en actualizarQueja: $e");
       throw Exception('No se pudo actualizar la queja');

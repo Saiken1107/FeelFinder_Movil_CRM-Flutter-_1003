@@ -62,9 +62,9 @@ class QuejaService {
 
       final response = await client.post(uri, headers: headers, body: body);
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 201) {
         print("Error al registrar queja: ${response.body}");
-        throw Exception('Error al registrar la queja');
+        throw Exception('Error al registrar la queja ${response.body}');
       }
     } catch (e) {
       print("Exception in registrarQueja: $e");
@@ -73,12 +73,15 @@ class QuejaService {
   }
 
   // Actualizar una queja existente
-  Future<void> actualizarQueja(
-      int id, String descripcion, int tipo, int estatus) async {
+  Future<void> actualizarQueja(int id, String descripcion, int tipo,
+      int estatus, idUsuarioSolicita, idUsuarioNecesita) async {
     try {
       final Uri uri = ApiHelper.buildUri('/api/queja/actualizar/$id');
 
       final body = json.encode({
+        "id": id,
+        "idUsuarioSolicita": idUsuarioSolicita,
+        "idUsuarioNecesita": idUsuarioNecesita,
         'descripcion': descripcion,
         'tipo': tipo,
         'estatus': estatus,
@@ -86,7 +89,7 @@ class QuejaService {
 
       final response = await client.put(uri, headers: headers, body: body);
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 204) {
         print("Error al actualizar queja: ${response.body}");
         throw Exception('Error al actualizar la queja');
       }
