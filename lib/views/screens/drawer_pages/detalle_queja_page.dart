@@ -15,21 +15,11 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
   int? _estatus;
   late TextEditingController _descripcionController;
 
-  // Listas de usuarios y tipos de queja
-  final List<Map<String, dynamic>> usuarios = [
-    {"id": 1, "nombre": "Juan Pablo"},
-    {"id": 2, "nombre": "Maira Martínez"},
-    {"id": 3, "nombre": "Carmen Luz"},
-    {"id": 4, "nombre": "Roberto Sánchez"},
-  ];
+  // Listas de usuarios dinámicas
+  List<Map<String, dynamic>> usuarios = [];
+  List<Map<String, dynamic>> usuariosSolicitud = [];
 
-  final List<Map<String, dynamic>> usuariosSolicitud = [
-    {"id": 1, "nombre": "Laura Jiménez"},
-    {"id": 2, "nombre": "Carlos Rodríguez"},
-    {"id": 3, "nombre": "Patricia Díaz"},
-    {"id": 4, "nombre": "Pedro Gómez"},
-  ];
-
+  // Lista estática de tipos de queja
   final List<Map<String, dynamic>> tiposQueja = [
     {"id": 1, "tipo": "Mejora"},
     {"id": 2, "tipo": "Queja"},
@@ -44,6 +34,7 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
         widget.queja['estatus']; // Inicializamos el estatus desde el mapa
     _descripcionController =
         TextEditingController(text: widget.queja['descripcion']);
+    _loadUsuarios(); // Cargar usuarios al iniciar la página
   }
 
   @override
@@ -53,20 +44,50 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
     super.dispose();
   }
 
+  Future<void> _loadUsuarios() async {
+    try {
+      // Llamar al controlador para obtener la lista de profesionales
+      final profesionales = await _quejaController.obtenerProfesionales();
+
+      // Extraer los datos de persona y llenar las listas
+      final personas = profesionales
+          .where((profesional) => profesional['persona'] != null)
+          .map((profesional) => {
+                "id": profesional['persona']['id'],
+                "nombre":
+                    "${profesional['persona']['nombre']} ${profesional['persona']['apellido']}"
+              })
+          .toList();
+
+      setState(() {
+        usuarios = personas;
+        usuariosSolicitud = personas;
+      });
+    } catch (e) {
+      // Manejo de errores
+      print("Error al cargar los usuarios: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al cargar usuarios")),
+      );
+    }
+  }
+
+  // Función para obtener el nombre de un usuario por su ID
+  String getUserNameById(int id, List<Map<String, dynamic>> userList) {
+    try {
+      return userList.firstWhere((user) => user['id'] == id)['nombre'];
+    } catch (e) {
+      return "Desconocido"; // Valor por defecto si no se encuentra
+    }
+  }
+
+  // Función para obtener el tipo de queja por su ID
+  String getQuejaTipoById(int id) {
+    return tiposQueja.firstWhere((tipo) => tipo['id'] == id)['tipo'];
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Función para obtener el nombre de un usuario por su ID
-    String getUserNameById(int id, bool isSolicitante) {
-      List<Map<String, dynamic>> userList =
-          isSolicitante ? usuarios : usuariosSolicitud;
-      return userList.firstWhere((user) => user['id'] == id)['nombre'];
-    }
-
-    // Función para obtener el tipo de queja por su ID
-    String getQuejaTipoById(int id) {
-      return tiposQueja.firstWhere((tipo) => tipo['id'] == id)['tipo'];
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Detalle de la Queja"),
@@ -84,7 +105,7 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               subtitle: Text(
-                  getUserNameById(widget.queja['idUsuarioSolicita'], true)),
+                  getUserNameById(widget.queja['idUsuarioSolicita'], usuarios)),
             ),
             SizedBox(height: 20),
 
@@ -95,8 +116,8 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
                 "Usuario Necesita:",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              subtitle: Text(
-                  getUserNameById(widget.queja['idUsuarioNecesita'], false)),
+              subtitle: Text(getUserNameById(
+                  widget.queja['idUsuarioNecesita'], usuariosSolicitud)),
             ),
             SizedBox(height: 20),
 
@@ -140,8 +161,7 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
                 labelText: "Selecciona Estatus",
                 prefixIcon: Icon(Icons.check_circle_outline),
               ),
-              value:
-                  _estatus, // El valor debe ser 0 o 1, asegúrate de que esté en la lista de items
+              value: _estatus,
               items: [
                 DropdownMenuItem<int>(value: 1, child: Text("Registro")),
                 DropdownMenuItem<int>(value: 2, child: Text("Pendiente")),
@@ -164,36 +184,42 @@ class _DetalleQuejaPageState extends State<DetalleQuejaPage> {
                 if (_estatus != null &&
                     _descripcionController.text.isNotEmpty) {
                   try {
-                    // Actualizamos la queja con los nuevos datos
                     await _quejaController.actualizarQueja(
-                      widget.queja['id'], // ID de la queja
-                      _descripcionController
-                          .text, // Nueva descripción de la queja
-                      widget.queja['tipo'], // Tipo de queja
-                      _estatus!, // Estatus actualizado
+                      widget.queja['id'],
+                      _descripcionController.text,
+                      widget.queja['tipo'],
+                      _estatus!,
                       widget.queja['idUsuarioSolicita'],
                       widget.queja['idUsuarioNecesita'],
                     );
 
-                    // Si la actualización es exitosa, mostramos un mensaje y volvemos a la página de QuejasPage
+                    // Muestra el SnackBar antes de navegar
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
                             "Estatus y descripción actualizados con éxito."),
-                        duration: Duration(seconds: 2), // Duración del mensaje
                       ),
                     );
 
-                    // Regresamos a la página anterior (QuejasPage)
-                    Navigator.pop(context);
+                    // Retrasa la navegación para evitar el error
+                    Future.delayed(Duration(milliseconds: 200), () {
+                      Navigator.pop(context, true);
+                    });
                   } catch (e) {
+                    // Manejo de errores
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Error al actualizar la queja."),
-                        duration: Duration(seconds: 2),
                       ),
                     );
                   }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Por favor, complete todos los campos."),
+                    ),
+                  );
+                  return;
                 }
               },
               icon: Icon(Icons.save),

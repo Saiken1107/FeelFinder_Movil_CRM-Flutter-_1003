@@ -10,20 +10,10 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
   final TextEditingController _descripcionController = TextEditingController();
 
   // Lista de usuarios con un ID y nombre (quien registra la queja)
-  final List<Map<String, dynamic>> usuarios = [
-    {"id": 1, "nombre": "Juan Pablo"},
-    {"id": 2, "nombre": "Maira Martínez"},
-    {"id": 3, "nombre": "Carmen Luz"},
-    {"id": 4, "nombre": "Roberto Sánchez"},
-  ];
+  List<Map<String, dynamic>> usuarios = [];
 
   // Lista de usuarios con un ID y nombre (usuario al que se le hace la solicitud)
-  final List<Map<String, dynamic>> usuariosSolicitud = [
-    {"id": 1, "nombre": "Laura Jiménez"},
-    {"id": 2, "nombre": "Carlos Rodríguez"},
-    {"id": 3, "nombre": "Patricia Díaz"},
-    {"id": 4, "nombre": "Pedro Gómez"},
-  ];
+  List<Map<String, dynamic>> usuariosSolicitud = [];
 
   // Lista de tipos de queja con un ID
   final List<Map<String, dynamic>> tiposQueja = [
@@ -33,20 +23,44 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
     {"id": 4, "tipo": "Sugerencias"},
   ];
 
-  int?
-      idUsuarioSeleccionado; // Almacena el ID del usuario que registra la queja
-  int?
-      idUsuarioSolicitudSeleccionado; // Almacena el ID del usuario al que se le hace la solicitud
-  int? idTipoSeleccionado =
-      1; // ID del tipo de queja seleccionado, por defecto es "Mejora"
+  int? idUsuarioSeleccionado;
+  int? idUsuarioSolicitudSeleccionado;
+  int? idTipoSeleccionado = 1;
 
   final QuejaController _quejaController = QuejaController();
 
   @override
   void initState() {
     super.initState();
-    // Aquí podrías llamar a un método para cargar los usuarios desde una API o base de datos
-    // _loadUsuarios();
+    _loadUsuarios(); // Cargar usuarios al iniciar la página
+  }
+
+  Future<void> _loadUsuarios() async {
+    try {
+      // Llamar al controlador para obtener la lista de profesionales
+      final profesionales = await _quejaController.obtenerProfesionales();
+
+      // Extraer los datos de persona y llenar las listas
+      final personas = profesionales
+          .where((profesional) => profesional['persona'] != null)
+          .map((profesional) => {
+                "id": profesional['persona']['id'],
+                "nombre":
+                    "${profesional['persona']['nombre']} ${profesional['persona']['apellido']}"
+              })
+          .toList();
+
+      setState(() {
+        usuarios = personas;
+        usuariosSolicitud = personas;
+      });
+    } catch (e) {
+      // Manejo de errores
+      print("Error al cargar los usuarios: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al cargar usuarios")),
+      );
+    }
   }
 
   @override
@@ -155,12 +169,12 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
                 }
 
                 try {
-                  // Llamamos al método del controlador para registrar la queja
+                  // Llamar al método del controlador para registrar la queja
                   await _quejaController.registrarQueja(
-                    idUsuarioSeleccionado!, // ID del usuario que solicita (dinámico)
-                    idUsuarioSolicitudSeleccionado!, // ID del usuario a quien se le hace la solicitud
+                    idUsuarioSeleccionado!,
+                    idUsuarioSolicitudSeleccionado!,
                     descripcion,
-                    idTipoSeleccionado!, // ID del tipo de queja
+                    idTipoSeleccionado!,
                   );
 
                   ScaffoldMessenger.of(context).showSnackBar(

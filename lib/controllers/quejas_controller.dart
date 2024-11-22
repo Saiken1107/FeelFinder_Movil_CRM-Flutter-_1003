@@ -46,4 +46,13 @@ class QuejaController {
       throw Exception('No se pudo cambiar el estatus de la queja');
     }
   }
+
+  Future<List<Map<String, dynamic>>> obtenerProfesionales() async {
+    try {
+      return await _quejaService.obtenerProfesional();
+    } catch (e) {
+      print("Error en obtenerQuejas: $e");
+      return []; // Retorna lista vacía en caso de error
+    }
+  }
 }
