@@ -86,7 +86,8 @@ class _HomePageState extends State<HomePage> {
                     texto: "Clientes",
                     icono: Icons.group,
                     onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.clientesPage);
+                      Provider.of<DrawerScreenProvider>(context, listen: false)
+                          .changeCurrentScreen(CustomScreensEnum.clientesPage);
                     },
                   ),
                   BotonMenu(
