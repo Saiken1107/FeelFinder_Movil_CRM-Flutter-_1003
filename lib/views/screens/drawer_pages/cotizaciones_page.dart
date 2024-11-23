@@ -1,195 +1,231 @@
+import 'package:feelfinder_mobile/controllers/cliente_controller.dart';
+import 'package:feelfinder_mobile/controllers/cotizacion_controller.dart';
 import 'package:flutter/material.dart';
-//import 'package:feel_finder_movil_1003-main/lib/models/quote_model.dart';
-import 'package:feelfinder_mobile/models/quote_model.dart';
+import 'package:intl/intl.dart';
 
 class CotizacionesPage extends StatefulWidget {
-  const CotizacionesPage({super.key});
+  const CotizacionesPage({Key? key}) : super(key: key);
 
   @override
   State<CotizacionesPage> createState() => _CotizacionesPageState();
 }
 
 class _CotizacionesPageState extends State<CotizacionesPage> {
-  final _formKey = GlobalKey<FormState>();
-  String _productLicense = '';
-  int _quantity = 0;
-  double _price = 0.0;
-  String _clientName = '';
-  final List<Quote> _quotes = [];
+  final CotizacionController _cotizacionController = CotizacionController();
+  final ClienteController _clienteController = ClienteController();
 
-  void _saveQuote() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      final newQuote = Quote(
-        id: DateTime.now().toString(),
-        productLicense: _productLicense,
-        quantity: _quantity,
-        price: _price,
-        clientName: _clientName,
-      );
-      setState(() {
-        _quotes.add(newQuote);
-      });
-    }
-  }
-
-  void _sendQuote(Quote quote) {
-    // Implementar lógica para enviar la cotización por correo electrónico
-  }
-
-  void _saveAndSendQuote() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      final newQuote = Quote(
-        id: DateTime.now().toString(),
-        productLicense: _productLicense,
-        quantity: _quantity,
-        price: _price,
-        clientName: _clientName,
-      );
-      setState(() {
-        _quotes.add(newQuote);
-      });
-      _sendQuote(newQuote);
-    }
-  }
-
-  void _refreshData() async {
-    setState(() {
-      // Actualización de los datos de las cotizaciones
-    });
-  }
+  List<Map<String, dynamic>> _cotizaciones = [];
+  List<Map<String, dynamic>> _clientes = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _refreshData();
+    _cargarDatos();
+  }
+
+  void _cargarDatos() async {
+    final clientes = await _clienteController.obtenerClientes();
+    final cotizaciones = await _cotizacionController.obtenerCotizaciones();
+
+    final cotizacionesConNombres = cotizaciones.map((cotizacion) {
+      final cliente = clientes.firstWhere(
+          (c) => c['id'] == cotizacion['clienteId'],
+          orElse: () => {});
+      return {
+        ...cotizacion,
+        'clienteNombre': cliente.isNotEmpty ? cliente['nombre'] : 'Desconocido',
+      };
+    }).toList();
+
+    setState(() {
+      _clientes = clientes;
+      _cotizaciones = cotizacionesConNombres;
+      _isLoading = false;
+    });
+  }
+
+  void _mostrarFormulario({int? id}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return CotizacionForm(
+          cotizacionId: id,
+          clientes: _clientes,
+          onSubmit: _cargarDatos,
+        );
+      },
+    );
+  }
+
+  void _eliminarCotizacion(int cotizacionId) async {
+    try {
+      await _cotizacionController.eliminarCotizacion(cotizacionId);
+      _cargarDatos();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cotización eliminada exitosamente.")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error al eliminar la cotización.")),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cotizaciones'),
+      appBar: AppBar(title: const Text('Cotizaciones')),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: _cotizaciones.length,
+              itemBuilder: (context, index) {
+                final cotizacion = _cotizaciones[index];
+                return ListTile(
+                  title: Text(cotizacion['descripcion']),
+                  subtitle: Text("Cliente: ${cotizacion['clienteNombre']}"),
+                  onTap: () => _mostrarFormulario(id: cotizacion['id']),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _eliminarCotizacion(cotizacion['id']),
+                  ),
+                );
+              },
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _mostrarFormulario,
+        child: const Icon(Icons.add),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Tabla de Cotizaciones',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              DataTable(
-                columns: const [
-                  DataColumn(label: Text('Producto')),
-                  DataColumn(label: Text('Cantidad')),
-                  DataColumn(label: Text('Precio')),
-                  DataColumn(label: Text('Cliente')),
-                  DataColumn(label: Text('Acciones')),
-                ],
-                rows: _quotes.map((quote) {
-                  return DataRow(cells: [
-                    DataCell(Text(quote.productLicense)),
-                    DataCell(Text(quote.quantity.toString())),
-                    DataCell(Text('\$${quote.price}')),
-                    DataCell(Text(quote.clientName)),
-                    DataCell(Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            // Lógica para editar la cotización
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              _quotes.remove(quote);
-                            });
-                          },
-                        ),
-                      ],
-                    )),
-                  ]);
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Solicitud de Cotización',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: const InputDecoration(
-                          labelText: 'Codigo de producto (Licencia.)'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingrese el Codigo de producto (Licencia.)';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _productLicense = value!;
-                      },
-                    ),
-                    TextFormField(
-                      decoration: const InputDecoration(labelText: 'Cantidad'),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingrese la cantidad';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _quantity = int.parse(value!);
-                      },
-                    ),
-                    TextFormField(
-                      decoration: const InputDecoration(labelText: 'Precio'),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingrese el precio';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _price = double.parse(value!);
-                      },
-                    ),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                          labelText: 'Nombre del Cliente'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingrese el nombre del cliente';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _clientName = value!;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _saveQuote,
-                      child: const Text('Levantar Cotización'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    );
+  }
+}
+
+class CotizacionForm extends StatefulWidget {
+  final int? cotizacionId;
+  final List<Map<String, dynamic>> clientes;
+  final VoidCallback onSubmit;
+
+  const CotizacionForm({
+    Key? key,
+    this.cotizacionId,
+    required this.clientes,
+    required this.onSubmit,
+  }) : super(key: key);
+
+  @override
+  _CotizacionFormState createState() => _CotizacionFormState();
+}
+
+class _CotizacionFormState extends State<CotizacionForm> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _descripcionController = TextEditingController();
+  final TextEditingController _precioController = TextEditingController();
+  DateTime? _fecha;
+  int? _clienteSeleccionado;
+
+  void _seleccionarFecha() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        _fecha = pickedDate;
+      });
+    }
+  }
+
+  void _guardarFormulario() async {
+    if (_formKey.currentState!.validate() &&
+        _clienteSeleccionado != null &&
+        _fecha != null) {
+      final cotizacionData = {
+        'clienteId': _clienteSeleccionado,
+        'descripcion': _descripcionController.text,
+        'precio': double.parse(_precioController.text),
+        'fecha': _fecha!.toIso8601String(),
+      };
+
+      try {
+        if (widget.cotizacionId == null) {
+          await CotizacionController().registrarCotizacion(cotizacionData);
+        } else {
+          await CotizacionController()
+              .actualizarCotizacion(widget.cotizacionId!, cotizacionData);
+        }
+        widget.onSubmit();
+        Navigator.of(context).pop();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error al guardar la cotización: $e")),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<int>(
+              value: _clienteSeleccionado,
+              items: widget.clientes.map((cliente) {
+                return DropdownMenuItem<int>(
+                  value: cliente['id'],
+                  child: Text(cliente['nombre']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _clienteSeleccionado = value;
+                });
+              },
+              decoration: const InputDecoration(labelText: "Cliente"),
+              validator: (value) =>
+                  value == null ? "Selecciona un cliente" : null,
+            ),
+            TextFormField(
+              controller: _descripcionController,
+              decoration: const InputDecoration(labelText: "Descripción"),
+              validator: (value) => value == null || value.isEmpty
+                  ? "Ingresa una descripción"
+                  : null,
+            ),
+            TextFormField(
+              controller: _precioController,
+              decoration: const InputDecoration(labelText: "Precio"),
+              keyboardType: TextInputType.number,
+              validator: (value) =>
+                  value == null || value.isEmpty ? "Ingresa un precio" : null,
+            ),
+            ListTile(
+              title: Text(_fecha != null
+                  ? "Fecha: ${DateFormat.yMd().format(_fecha!)}"
+                  : "Selecciona una fecha"),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: _seleccionarFecha,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _guardarFormulario,
+              child:
+                  Text(widget.cotizacionId == null ? "Agregar" : "Actualizar"),
+            ),
+          ],
         ),
       ),
     );

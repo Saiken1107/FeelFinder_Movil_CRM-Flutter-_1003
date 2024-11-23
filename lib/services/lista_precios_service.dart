@@ -1,59 +1,108 @@
-// FeelFinder_Movil_CRM-Flutter-_1003/lib/servicios/lista_precios_servicio.dart
 import 'dart:convert';
-import 'package:feelfinder_mobile/models/lista_precios.dart';
 import 'package:http/http.dart' as http;
+import 'package:hive/hive.dart';
+import '../helpers/api_helper.dart';
 
-class ListaPreciosServicio {
-  final String apiUrl =
-      "http://localhost:5000/api/listaprecios"; // Cambia esta URL según tu configuración
+class ListaPreciosService {
+  final http.Client client = http.Client();
 
-  Future<List<ListaPrecios>> obtenerListasPrecios() async {
-    final response = await http.get(Uri.parse(apiUrl));
+  Future<String?> _obtenerToken() async {
+    var box = await Hive.openBox('login');
+    return box.get('token');
+  }
 
-    if (response.statusCode == 200) {
-      List<dynamic> body = jsonDecode(response.body);
-      List<ListaPrecios> listasPrecios =
-          body.map((dynamic item) => ListaPrecios.fromJson(item)).toList();
-      return listasPrecios;
-    } else {
-      throw Exception('Error al cargar las listas de precios');
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await _obtenerToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+
+  // Obtener todas las listas de precios
+  Future<List<Map<String, dynamic>>> obtenerListasPrecios() async {
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/listaPrecios');
+      final response = await client.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(json.decode(response.body));
+      } else {
+        throw Exception('Error al cargar las listas de precios');
+      }
+    } catch (e) {
+      print("Exception in obtenerListasPrecios: $e");
+      return [];
     }
   }
 
-  Future<ListaPrecios> obtenerListaPrecios(int id) async {
-    final response = await http.get(Uri.parse('$apiUrl/$id'));
+  // Obtener una lista de precios por ID
+  Future<Map<String, dynamic>> obtenerListaPreciosPorId(int id) async {
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/listaPrecios/$id');
+      final response = await client.get(uri, headers: headers);
 
-    if (response.statusCode == 200) {
-      return ListaPrecios.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Error al cargar la lista de precios');
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(json.decode(response.body));
+      } else {
+        throw Exception('Error al obtener la lista de precios');
+      }
+    } catch (e) {
+      print("Exception in obtenerListaPreciosPorId: $e");
+      throw Exception('No se pudo obtener la lista de precios');
     }
   }
 
-  Future<http.Response> crearListaPrecios(ListaPrecios listaPrecios) async {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(listaPrecios.toJson()),
-    );
+  // Crear una nueva lista de precios
+  Future<void> crearListaPrecios(Map<String, dynamic> listaPrecios) async {
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/listaPrecios');
 
-    return response;
+      final response = await client.post(uri, headers: headers, body: json.encode(listaPrecios));
+
+      if (response.statusCode != 201) {
+        throw Exception('Error al crear la lista de precios');
+      }
+    } catch (e) {
+      print("Exception in crearListaPrecios: $e");
+      throw Exception('No se pudo crear la lista de precios');
+    }
   }
 
-  Future<http.Response> actualizarListaPrecios(
-      int id, ListaPrecios listaPrecios) async {
-    final response = await http.put(
-      Uri.parse('$apiUrl/$id'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(listaPrecios.toJson()),
-    );
+  // Actualizar una lista de precios existente
+  Future<void> actualizarListaPrecios(int id, Map<String, dynamic> listaPrecios) async {
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/listaPrecios/$id');
 
-    return response;
+      final response = await client.put(uri, headers: headers, body: json.encode(listaPrecios));
+
+      if (response.statusCode != 204) {
+        throw Exception('Error al actualizar la lista de precios');
+      }
+    } catch (e) {
+      print("Exception in actualizarListaPrecios: $e");
+      throw Exception('No se pudo actualizar la lista de precios');
+    }
   }
 
-  Future<http.Response> eliminarListaPrecios(int id) async {
-    final response = await http.delete(Uri.parse('$apiUrl/$id'));
+  // Eliminar una lista de precios
+  Future<void> eliminarListaPrecios(int id) async {
+    try {
+      final headers = await _getHeaders();
+      final Uri uri = ApiHelper.buildUri('/api/listaPrecios/$id');
 
-    return response;
+      final response = await client.delete(uri, headers: headers);
+
+      if (response.statusCode != 204) {
+        throw Exception('Error al eliminar la lista de precios');
+      }
+    } catch (e) {
+      print("Exception in eliminarListaPrecios: $e");
+      throw Exception('No se pudo eliminar la lista de precios');
+    }
   }
 }

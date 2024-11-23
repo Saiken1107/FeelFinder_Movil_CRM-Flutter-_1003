@@ -1,16 +1,50 @@
-
-import 'package:feelfinder_mobile/models/lista_precios.dart';
-import 'package:feelfinder_mobile/services/lista_precios_service.dart';
-
+import '../services/lista_precios_service.dart';
 
 class ListaPreciosController {
-  final ListaPreciosServicio _listaPreciosServicio = ListaPreciosServicio();
+  final ListaPreciosService _listaPreciosService = ListaPreciosService();
 
-  Future<List<ListaPrecios>> obtenerListasPrecios() {
-    return _listaPreciosServicio.obtenerListasPrecios();
+  Future<List<Map<String, dynamic>>> obtenerListasPrecios() async {
+    try {
+      return await _listaPreciosService.obtenerListasPrecios();
+    } catch (e) {
+      print("Error en obtenerListasPrecios: $e");
+      return [];
+    }
   }
 
-  Future<void> crearListaPrecios(ListaPrecios listaPrecios) {
-    return _listaPreciosServicio.crearListaPrecios(listaPrecios);
+  Future<Map<String, dynamic>> obtenerListaPreciosPorId(int id) async {
+    try {
+      return await _listaPreciosService.obtenerListaPreciosPorId(id);
+    } catch (e) {
+      print("Error en obtenerListaPreciosPorId: $e");
+      throw Exception('Error al obtener la lista de precios');
+    }
+  }
+
+  Future<void> crearListaPrecios(Map<String, dynamic> listaPrecios) async {
+    try {
+      await _listaPreciosService.crearListaPrecios(listaPrecios);
+    } catch (e) {
+      print("Error en crearListaPrecios: $e");
+      throw Exception('Error al crear la lista de precios');
+    }
+  }
+
+  Future<void> actualizarListaPrecios(int id, Map<String, dynamic> listaPrecios) async {
+    try {
+      await _listaPreciosService.actualizarListaPrecios(id, listaPrecios);
+    } catch (e) {
+      print("Error en actualizarListaPrecios: $e");
+      throw Exception('Error al actualizar la lista de precios');
+    }
+  }
+
+  Future<void> eliminarListaPrecios(int id) async {
+    try {
+      await _listaPreciosService.eliminarListaPrecios(id);
+    } catch (e) {
+      print("Error en eliminarListaPrecios: $e");
+      throw Exception('Error al eliminar la lista de precios');
+    }
   }
 }

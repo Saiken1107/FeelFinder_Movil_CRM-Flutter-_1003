@@ -6,9 +6,8 @@ import 'package:feelfinder_mobile/views/screens/drawer_pages/plan_suscripciones_
 import 'package:feelfinder_mobile/views/screens/drawer_pages/quejas_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/dashboard_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/oportunidades_page.dart';
-import 'package:feelfinder_mobile/views/screens/drawer_pages/precios_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/lista_precios_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/suscripciones_page.dart';
-import 'package:feelfinder_mobile/views/screens/drawer_pages/ventas_page.dart';
 
 import 'package:feelfinder_mobile/views/screens/drawer_pages/empresas_page.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +77,7 @@ class DrawerScreenProvider extends ChangeNotifier {
         break;
 
       case CustomScreensEnum.preciosPage:
-        currentScreen = const PreciosPage();
+        currentScreen = ListaPreciosPage();
         _currentString = "Precios";
         _currentActions = [];
         break;
@@ -91,12 +90,6 @@ class DrawerScreenProvider extends ChangeNotifier {
       case CustomScreensEnum.quejasPage:
         currentScreen = QuejasPage();
         _currentString = "Quejas";
-        _currentActions = [];
-        break;
-
-      case CustomScreensEnum.listapreciosPage:
-        currentScreen = PreciosPage();
-        _currentString = "Precios";
         _currentActions = [];
         break;
 
