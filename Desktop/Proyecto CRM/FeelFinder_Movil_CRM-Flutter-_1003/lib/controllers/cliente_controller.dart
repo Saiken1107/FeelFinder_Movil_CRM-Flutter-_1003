@@ -13,7 +13,8 @@ class ClienteController {
     }
   }
 
-  Future<void> registrarCliente(String correo, String nombre, String apellido) async {
+  Future<void> registrarCliente(
+      String correo, String nombre, String apellido) async {
     try {
       await _clienteService.registrarCliente(correo, nombre, apellido);
     } catch (e) {
@@ -22,7 +23,8 @@ class ClienteController {
     }
   }
 
-  Future<void> actualizarCliente(int id, String correo, String nombre, String apellido) async {
+  Future<void> actualizarCliente(
+      int id, String correo, String nombre, String apellido) async {
     try {
       await _clienteService.actualizarCliente(id, correo, nombre, apellido);
     } catch (e) {
