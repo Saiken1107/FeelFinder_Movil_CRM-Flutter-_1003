@@ -2,7 +2,7 @@ class OportunidadVenta {
   int id;
   String nombreCliente;
   String descripcion;
-  double valorEstimado;
+  int valorEstimado;
   DateTime fechaCierre;
   String estado;
 

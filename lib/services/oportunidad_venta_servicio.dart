@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:feelfinder_mobile/helpers/api_helper.dart';
 import 'package:http/http.dart' as http;
 import '../models/oportunidad_venta.dart';
 
 class OportunidadVentaServicio {
   final String apiUrl =
-      "http://localhost:5000/api/oportunidadventa"; // Cambia esta URL según tu configuración
+      "https://${ApiHelper.baseUrl}/api/oportunidadventa"; // Cambia esta URL según tu configuración
 
   Future<List<OportunidadVenta>> obtenerOportunidadesVenta() async {
     final response = await http.get(Uri.parse(apiUrl));

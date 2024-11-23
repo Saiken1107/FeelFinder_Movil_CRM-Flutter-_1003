@@ -10,15 +10,15 @@ class PreciosPage extends StatefulWidget {
 }
 
 class _PriceListPageState extends State<PreciosPage> {
-  final List<PriceList> _priceLists = [];
+  final List<ListaPrecios> _priceLists = [];
 
-  void _addPriceList(PriceList priceList) {
+  void _addPriceList(ListaPrecios priceList) {
     setState(() {
       _priceLists.add(priceList);
     });
   }
 
-  void _editPriceList(int index, PriceList updatedPriceList) {
+  void _editPriceList(int index, ListaPrecios updatedPriceList) {
     setState(() {
       _priceLists[index] = updatedPriceList;
     });
@@ -38,7 +38,7 @@ class _PriceListPageState extends State<PreciosPage> {
         itemCount: _priceLists.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(_priceLists[index].name),
+            title: Text(_priceLists[index].empresa),
           );
         },
       ),
