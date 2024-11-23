@@ -159,6 +159,48 @@ class AppDrawer extends StatelessWidget {
                       .changeCurrentScreen(CustomScreensEnum.oportunidadesPage);
                   Navigator.pop(context);
                 }),
+
+                DrawerTile(
+                title: 'Cotizaciones',
+                icon: Icons.contact_phone,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.cotizacionPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Reclamos',
+                icon: Icons.group,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.quejasPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Dashboard',
+                icon: Icons.stacked_line_chart,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(
+                          CustomScreensEnum.tablerorendimientopage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Precios',
+                icon: Icons.price_change,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.listapreciosPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Oportunidades',
+                icon: Icons.handshake_rounded,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.oportunidadesPage);
+                  Navigator.pop(context);
+                }),
             DrawerTile(
               title: 'Cerrar Sesión',
               icon: Icons.logout,

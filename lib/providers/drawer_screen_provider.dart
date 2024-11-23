@@ -88,7 +88,29 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentString = "Dashboard";
         _currentActions = [];
         break;
+      case CustomScreensEnum.quejasPage:
+        currentScreen = QuejasPage();
+        _currentString = "Quejas";
+        _currentActions = [];
+        break;
 
+      case CustomScreensEnum.listapreciosPage:
+        currentScreen = PreciosPage();
+        _currentString = "Precios";
+        _currentActions = [];
+        break;
+
+      case CustomScreensEnum.tablerorendimientopage:
+        currentScreen = DashboardPage();
+        _currentString = "Dashboard";
+        _currentActions = [];
+        break;
+
+      case CustomScreensEnum.oportunidadventaPage:
+        currentScreen = OportunidadesPage();
+        _currentString = "Oportunidades";
+        _currentActions = [];
+        break;
       case CustomScreensEnum.oportunidadesPage:
         currentScreen = const OportunidadesPage();
         _currentString = "Oportunidades";
@@ -112,15 +134,15 @@ class DrawerScreenProvider extends ChangeNotifier {
 
 enum CustomScreensEnum {
   homePage,
-
+  listapreciosPage,
   planesSuscripcionPage,
   suscripcionesPage,
   pagosPage,
-
+  cotizacionPage,
   clientesPage,
-
+  tablerorendimientopage,
   cotizacionesPage,
-
+  oportunidadventaPage,
   quejasPage,
   dashboardPage,
   preciosPage,
