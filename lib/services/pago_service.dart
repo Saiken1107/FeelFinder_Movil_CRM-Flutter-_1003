@@ -50,7 +50,8 @@ class PagoService {
     final headers = await _getHeaders();
     final Uri uri = ApiHelper.buildUri('/api/pago/registrar-pago');
 
-    final response = await client.post(uri, headers: headers, body: json.encode(data));
+    final response =
+        await client.post(uri, headers: headers, body: json.encode(data));
 
     if (response.statusCode != 200) {
       throw Exception('Error al registrar el pago');
@@ -61,7 +62,8 @@ class PagoService {
     final headers = await _getHeaders();
     final Uri uri = ApiHelper.buildUri('/api/pago/$id/actualizar');
 
-    final response = await client.put(uri, headers: headers, body: json.encode(data));
+    final response =
+        await client.put(uri, headers: headers, body: json.encode(data));
 
     if (response.statusCode != 200) {
       throw Exception('Error al actualizar el pago');

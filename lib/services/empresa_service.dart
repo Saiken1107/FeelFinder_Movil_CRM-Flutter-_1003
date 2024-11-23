@@ -58,16 +58,18 @@ class EmpresaService {
 
   // Actualizar una empresa existente
   Future<void> actualizarEmpresa(int id, String nombre, String direccion,
-      String telefono, String correo, String nombreCliente) async {
+      String telefono, String correo, String nombreCliente, int status) async {
     try {
-      final Uri uri = ApiHelper.buildUri('/api/empresa/actualizar/$id');
+      final Uri uri = ApiHelper.buildUri('/api/empresa/actualizar-datos/$id');
 
       final body = json.encode({
+        'id': id,
         'NombreCliente': nombre,
         'NombreEmpresa': nombreCliente,
         'direccion': direccion,
         'telefono': telefono,
         'correo': correo,
+        "estatus": status
       });
 
       final response = await client.put(uri, headers: headers, body: body);
