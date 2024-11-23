@@ -14,10 +14,17 @@ class _PlanesSuscripcionPageState extends State<PlanesSuscripcionesPage> {
   final planController = PlanSuscripcionController();
 
   bool _isLoading = true;
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _duracionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPlanes();
+  }
 
   void _loadPlanes() async {
     try {
@@ -34,49 +41,39 @@ class _PlanesSuscripcionPageState extends State<PlanesSuscripcionesPage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadPlanes();
-  }
-
-  Future<void> _addPlan() async {
-    try {
-      await planController.registrarPlan(
-        _nombreController.text,
-        double.parse(_precioController.text),
-        _descripcionController.text,
-        int.parse(_duracionController.text),
-      );
-      _loadPlanes();
-      Navigator.of(context).pop();
-    } catch (e) {
-      _showError("No se pudo registrar el plan: $e");
-    }
-  }
-
-  Future<void> _updatePlan(int id) async {
-    try {
-      await planController.actualizarPlan(
-        id,
-        _nombreController.text,
-        double.tryParse(_precioController.text),
-        _descripcionController.text,
-        int.tryParse(_duracionController.text),
-      );
-      _loadPlanes();
-      Navigator.of(context).pop();
-    } catch (e) {
-      _showError("No se pudo actualizar el plan: $e");
+  Future<void> _addOrUpdatePlan({int? id}) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      try {
+        if (id == null) {
+          await planController.registrarPlan(
+            _nombreController.text,
+            double.parse(_precioController.text),
+            _descripcionController.text,
+            int.parse(_duracionController.text),
+          );
+          _showSuccess("Plan agregado exitosamente.");
+        } else {
+          await planController.actualizarPlan(
+            id,
+            _nombreController.text,
+            double.parse(_precioController.text),
+            _descripcionController.text,
+            int.parse(_duracionController.text),
+          );
+          _showSuccess("Plan actualizado exitosamente.");
+        }
+        _loadPlanes();
+        Navigator.of(context).pop();
+      } catch (e) {
+        _showError("Error al registrar el plan: $e");
+      }
     }
   }
 
   void _deletePlan(int id) async {
     try {
       await planController.eliminarPlan(id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Plan eliminado")),
-      );
+      _showSuccess("Plan eliminado.");
       _loadPlanes();
     } catch (e) {
       _showError("No se pudo eliminar el plan: $e");
@@ -85,10 +82,13 @@ class _PlanesSuscripcionPageState extends State<PlanesSuscripcionesPage> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
     );
   }
 
@@ -109,6 +109,9 @@ class _PlanesSuscripcionPageState extends State<PlanesSuscripcionesPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (_) {
         return Padding(
           padding: EdgeInsets.only(
@@ -117,39 +120,88 @@ class _PlanesSuscripcionPageState extends State<PlanesSuscripcionesPage> {
             top: 16,
             bottom: MediaQuery.of(context).viewInsets.bottom + 16,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nombreController,
-                decoration: InputDecoration(labelText: 'Nombre del Plan'),
-              ),
-              TextField(
-                controller: _precioController,
-                decoration: InputDecoration(labelText: 'Precio'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: _descripcionController,
-                decoration: InputDecoration(labelText: 'Descripción'),
-              ),
-              TextField(
-                controller: _duracionController,
-                decoration: InputDecoration(labelText: 'Duración (meses)'),
-                keyboardType: TextInputType.number,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                child: Text(id == null ? 'Agregar Plan' : 'Actualizar Plan'),
-                onPressed: () async {
-                  if (id == null) {
-                    await _addPlan();
-                  } else {
-                    await _updatePlan(id);
-                  }
-                },
-              )
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  id == null ? "Agregar Plan" : "Actualizar Plan",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _nombreController,
+                  decoration: InputDecoration(
+                    labelText: "Nombre del Plan",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "El nombre no puede estar vacío.";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _precioController,
+                  decoration: InputDecoration(
+                    labelText: "Precio",
+                    prefixIcon: Icon(Icons.attach_money),
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "El precio no puede estar vacío.";
+                    }
+                    if (double.tryParse(value) == null ||
+                        double.parse(value) <= 0) {
+                      return "El precio debe ser un número mayor a 0.";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _descripcionController,
+                  decoration: InputDecoration(
+                    labelText: "Descripción",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "La descripción no puede estar vacía.";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _duracionController,
+                  decoration: InputDecoration(
+                    labelText: "Duración (meses)",
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "La duración no puede estar vacía.";
+                    }
+                    if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                      return "La duración debe ser un número mayor a 0.";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => _addOrUpdatePlan(id: id),
+                  child: Text(id == null ? "Agregar Plan" : "Actualizar Plan"),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -162,24 +214,45 @@ class _PlanesSuscripcionPageState extends State<PlanesSuscripcionesPage> {
       appBar: AppBar(title: Text("Planes de Suscripción")),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _planes.length,
-              itemBuilder: (context, index) {
-                final plan = _planes[index];
-                return ListTile(
-                  title: Text(plan['nombre']),
-                  subtitle: Text("Precio: ${plan['precio']}"),
-                  onTap: () => _showForm(id: plan['id']),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () => _deletePlan(plan['id']),
-                  ),
-                );
-              },
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: _planes.length,
+                itemBuilder: (context, index) {
+                  final plan = _planes[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(
+                        plan['nombre'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Precio: \$${plan['precio']}"),
+                          Text("Duración: ${plan['duracionMeses']} meses"),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _deletePlan(plan['id']),
+                      ),
+                      onTap: () => _showForm(id: plan['id']),
+                    ),
+                  );
+                },
+              ),
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showForm(),
-        child: Icon(Icons.add),
+        label: Text("Agregar"),
+        icon: Icon(Icons.add),
       ),
     );
   }

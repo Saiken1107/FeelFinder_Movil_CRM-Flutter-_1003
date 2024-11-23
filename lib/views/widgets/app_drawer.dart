@@ -145,6 +145,14 @@ class AppDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 }),
             DrawerTile(
+                title: 'Empresa',
+                icon: Icons.add_business,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.empresasPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
                 title: 'Dashboard',
                 icon: Icons.stacked_line_chart,
                 onTap: () {
