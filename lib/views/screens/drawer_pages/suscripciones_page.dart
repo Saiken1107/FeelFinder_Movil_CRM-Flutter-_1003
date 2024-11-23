@@ -33,8 +33,11 @@ class _SuscripcionesPageState extends State<SuscripcionesPage> {
     final suscripciones = await _suscripcionController.obtenerSuscripciones();
 
     final suscripcionesConNombres = suscripciones.map((suscripcion) {
-      final cliente = clientes.firstWhere((c) => c['id'] == suscripcion['clienteId'], orElse: () => {});
-      final plan = planes.firstWhere((p) => p['id'] == suscripcion['planId'], orElse: () => {});
+      final cliente = clientes.firstWhere(
+          (c) => c['id'] == suscripcion['clienteId'],
+          orElse: () => {});
+      final plan = planes.firstWhere((p) => p['id'] == suscripcion['planId'],
+          orElse: () => {});
 
       return {
         ...suscripcion,
@@ -67,54 +70,79 @@ class _SuscripcionesPageState extends State<SuscripcionesPage> {
 
   void _mostrarDetallesSuscripcion(int suscripcionId) async {
     final pagos = await _pagoController.obtenerPagos();
-    final suscripcion = _suscripciones.firstWhere((s) => s['id'] == suscripcionId);
-    final pagosFiltrados = pagos.where((p) => p['suscripcionId'] == suscripcionId).toList();
+    final suscripcion =
+        _suscripciones.firstWhere((s) => s['id'] == suscripcionId);
+    final pagosFiltrados =
+        pagos.where((p) => p['suscripcionId'] == suscripcionId).toList();
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (_) => Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Detalles de la suscripción
-            Text(
-              'Detalles de la Suscripción',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Icon(Icons.info, size: 28, color: Colors.blue),
+                SizedBox(width: 10),
+                Text(
+                  'Detalles de la Suscripción',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
+            Divider(thickness: 1, height: 20),
             SizedBox(height: 8),
-            Text('Cliente: ${suscripcion["clienteNombre"]}'),
-            Text('Plan: ${suscripcion["planNombre"]}'),
-            Text('Fecha de Inicio: ${suscripcion["fechaDeInicio"]}'),
-            Text('Fecha de Fin: ${suscripcion["fechaDeFin"]}'),
-            Text('Estado: ${suscripcion["estado"]}'),
+            Text("Cliente: ${suscripcion["clienteNombre"]}"),
+            Text("Plan: ${suscripcion["planNombre"]}"),
+            Text("Fecha Inicio: ${suscripcion["fechaDeInicio"]}"),
+            Text("Fecha Fin: ${suscripcion["fechaDeFin"]}"),
+            Text("Estado: ${suscripcion["estado"]}"),
             SizedBox(height: 16),
-
-            // Lista de pagos asociados
             Text(
               'Pagos Asociados',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 8),
             pagosFiltrados.isNotEmpty
                 ? ListView.builder(
                     shrinkWrap: true,
                     itemCount: pagosFiltrados.length,
                     itemBuilder: (context, index) {
                       final pago = pagosFiltrados[index];
-                      return ListTile(
-                        title: Text('Cantidad: \$${pago["cantidad"]}'),
-                        subtitle: Text('Fecha de Pago: ${pago["fechaDePago"]}'),
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          leading:
+                              Icon(Icons.attach_money, color: Colors.green),
+                          title: Text("Cantidad: \$${pago["cantidad"]}"),
+                          subtitle: Text(
+                            "Fecha: ${DateFormat.yMMMd().format(DateTime.parse(pago["fechaDePago"]))}",
+                          ),
+                        ),
                       );
                     },
                   )
-                : Center(child: Text("No hay pagos registrados para esta suscripción")),
+                : Center(
+                    child:
+                        Text("No hay pagos registrados para esta suscripción"),
+                  ),
             SizedBox(height: 16),
-
-            // Botón para abrir formulario de registro de pago
             ElevatedButton(
               onPressed: () => _mostrarFormularioPago(suscripcionId),
               child: Text("Registrar Pago"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
           ],
         ),
@@ -129,7 +157,8 @@ class _SuscripcionesPageState extends State<SuscripcionesPage> {
         suscripcionId: suscripcionId,
         onSubmit: () {
           Navigator.pop(context); // Cerrar el formulario de pago
-          _mostrarDetallesSuscripcion(suscripcionId); // Refrescar detalles de suscripción
+          _mostrarDetallesSuscripcion(
+              suscripcionId); // Refrescar detalles de suscripción
         },
       ),
     );
@@ -176,44 +205,73 @@ class _SuscripcionesPageState extends State<SuscripcionesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Suscripciones')),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _suscripciones.length,
-              itemBuilder: (context, index) {
-                final suscripcion = _suscripciones[index];
-                return ListTile(
-                  title: Text('Cliente: ${suscripcion["clienteNombre"]}'),
-                  subtitle: Text('Plan: ${suscripcion["planNombre"]}'),
-                  onTap: () => _mostrarDetallesSuscripcion(suscripcion["id"]),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () => _mostrarFormulario(id: suscripcion["id"]),
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: _suscripciones.length,
+                itemBuilder: (context, index) {
+                  final suscripcion = _suscripciones[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(
+                        suscripcion["clienteNombre"],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _confirmarEliminacion(suscripcion["id"]),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Plan: ${suscripcion["planNombre"]}"),
+                          Text(
+                            "Estado: ${suscripcion["estado"]}",
+                            style: TextStyle(
+                              color: suscripcion["estado"] == "Activo"
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
+                      trailing: Wrap(
+                        spacing: 8,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () =>
+                                _mostrarFormulario(id: suscripcion["id"]),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () =>
+                                _confirmarEliminacion(suscripcion["id"]),
+                          ),
+                        ],
+                      ),
+                      onTap: () =>
+                          _mostrarDetallesSuscripcion(suscripcion["id"]),
+                    ),
+                  );
+                },
+              ),
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _mostrarFormulario,
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: _mostrarFormulario,
+          label: Text("Agregar"),
+          icon: Icon(Icons.add)),
     );
   }
 }
 
-
-
-// Formulario de pago
 class PagoForm extends StatefulWidget {
   final int suscripcionId;
   final VoidCallback onSubmit;
@@ -244,7 +302,14 @@ class _PagoFormState extends State<PagoForm> {
   }
 
   void _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false ) {
+    if (_formKey.currentState?.validate() ?? false) {
+      if (_fechaDePago == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Por favor, selecciona una fecha de pago.")),
+        );
+        return;
+      }
+
       final data = {
         "cantidad": double.parse(_cantidadController.text),
         "fechaDePago": _fechaDePago!.toIso8601String(),
@@ -254,6 +319,7 @@ class _PagoFormState extends State<PagoForm> {
       try {
         await PagoController().registrarPago(data);
         widget.onSubmit();
+        Navigator.pop(context); // Cerrar la ventana después del envío
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error al registrar el pago")),
@@ -268,37 +334,85 @@ class _PagoFormState extends State<PagoForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: _cantidadController,
-              decoration: InputDecoration(labelText: "Cantidad"),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Ingresa una cantidad";
-                }
-                return null;
-              },
-            ),
-            ListTile(
-              title: Text(_fechaDePago != null
-                  ? "Fecha de Pago: ${DateFormat.yMd().format(_fechaDePago!)}"
-                  : "Selecciona la Fecha de Pago"),
-              trailing: Icon(Icons.calendar_today),
-              onTap: _selectFechaDePago,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _submitForm,
-              child: Text("Guardar Pago"),
-            ),
-          ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Encabezado de la ventana
+              Row(
+                children: [
+                  Icon(Icons.payment, size: 28, color: Colors.blue),
+                  SizedBox(width: 10),
+                  Text(
+                    "Registrar Pago",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Divider(thickness: 1, height: 20),
+              SizedBox(height: 10),
+
+              // Campo para la cantidad
+              TextFormField(
+                controller: _cantidadController,
+                decoration: InputDecoration(
+                  labelText: "Cantidad",
+                  prefixIcon: Icon(Icons.attach_money),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Ingresa una cantidad válida.";
+                  }
+                  final cantidad = double.tryParse(value);
+                  if (cantidad == null || cantidad <= 0) {
+                    return "La cantidad debe ser mayor a 0.";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+
+              // Selector de fecha
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                tileColor: Colors.grey[200],
+                title: Text(
+                  _fechaDePago != null
+                      ? "Fecha de Pago: ${DateFormat.yMMMd().format(_fechaDePago!)}"
+                      : "Selecciona la Fecha de Pago",
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                trailing: Icon(Icons.calendar_today, color: Colors.blue),
+                onTap: _selectFechaDePago,
+              ),
+              SizedBox(height: 16),
+
+              // Botón para guardar
+              ElevatedButton.icon(
+                onPressed: _submitForm,
+                icon: Icon(Icons.save),
+                label: Text("Guardar Pago"),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

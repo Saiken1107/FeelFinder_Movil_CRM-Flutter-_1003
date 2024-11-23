@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:feelfinder_mobile/controllers/quejas_controller.dart';
 
 class NuevaQuejaPage extends StatefulWidget {
   @override
@@ -9,64 +8,59 @@ class NuevaQuejaPage extends StatefulWidget {
 
 class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
   final TextEditingController _descripcionController = TextEditingController();
-  final TextEditingController _nombreUsuarioController =
-      TextEditingController();
 
-  List<String> usuarios = [];
-  final List<String> tiposQueja = ["Mejora", "Queja", "Error", "Sugerencias"];
-  String? tipoSeleccionado = "Mejora";
-  String? usuarioSeleccionado;
+  // Lista de usuarios con un ID y nombre (quien registra la queja)
+  List<Map<String, dynamic>> usuarios = [];
+
+  // Lista de usuarios con un ID y nombre (usuario al que se le hace la solicitud)
+  List<Map<String, dynamic>> usuariosSolicitud = [];
+
+  // Lista de tipos de queja con un ID
+  final List<Map<String, dynamic>> tiposQueja = [
+    {"id": 1, "tipo": "Mejora"},
+    {"id": 2, "tipo": "Queja"},
+    {"id": 3, "tipo": "Error"},
+    {"id": 4, "tipo": "Sugerencias"},
+  ];
+
+  int? idUsuarioSeleccionado;
+  int? idUsuarioSolicitudSeleccionado;
+  int? idTipoSeleccionado = 1;
+
+  final QuejaController _quejaController = QuejaController();
 
   @override
   void initState() {
     super.initState();
-    obtenerUsuarios(); // Llamada al método para cargar los usuarios al iniciar
+    _loadUsuarios(); // Cargar usuarios al iniciar la página
   }
 
-  Future<List<Map<String, dynamic>>> obtenerUsuarios() async {
-    var client = http.Client();
-    Map<String, dynamic> body = {};
-
-    body.addAll({
-      'noDB': 'BD Encriptada',
-      'idDocente': 'ID Encriptado',
-      'idCE': '0 Encriptado',
-    });
-
+  Future<void> _loadUsuarios() async {
     try {
-      http.Response response = await client.post(
-        Uri.parse('http://localhost:5000/api/Account/sinToken'),
-        body: jsonEncode(body), // convierte el cuerpo a JSON
-        headers: {"Content-Type": "application/json"},
-      );
+      // Llamar al controlador para obtener la lista de profesionales
+      final profesionales = await _quejaController.obtenerProfesionales();
 
-      if (response.statusCode == 200) {
-        List<Map<String, dynamic>> usuariosList =
-            List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      // Extraer los datos de persona y llenar las listas
+      final personas = profesionales
+          .where((profesional) => profesional['persona'] != null)
+          .map((profesional) => {
+                "id": profesional['persona']['id'],
+                "nombre":
+                    "${profesional['persona']['nombre']} ${profesional['persona']['apellido']}"
+              })
+          .toList();
 
-        // Procesa y desencripta cada usuario
-        int i = 0;
-        for (var usuario in usuariosList) {
-          usuariosList[i]['fullName'] =
-              usuario['fullName']; // Ajusta según el dato que necesites
-          i++;
-        }
-
-        // Convierte explícitamente a List<String> usando map
-        setState(() {
-          usuarios = usuariosList
-              .map<String>((usuario) => usuario['fullName'] as String)
-              .toList();
-        });
-      } else {
-        throw Exception('Error al cargar usuarios');
-      }
+      setState(() {
+        usuarios = personas;
+        usuariosSolicitud = personas;
+      });
     } catch (e) {
-      print("Error: $e");
-    } finally {
-      client.close();
+      // Manejo de errores
+      print("Error al cargar los usuarios: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al cargar usuarios")),
+      );
     }
-    return [];
   }
 
   @override
@@ -80,50 +74,71 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Campo de búsqueda de usuario
-            TextField(
-              controller: _nombreUsuarioController,
+            // Dropdown con lista de usuarios (quien registra la queja)
+            DropdownButtonFormField<int>(
               decoration: InputDecoration(
-                labelText: "Buscar Usuario",
-                prefixIcon: Icon(Icons.search),
+                labelText: "Selecciona Usuario Registra",
+                prefixIcon: Icon(Icons.person),
+                border: OutlineInputBorder(),
               ),
-            ),
-            SizedBox(height: 10),
-
-            // Dropdown con lista de usuarios de la API
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: "Seleccionar Usuario"),
-              items: usuarios.map((String usuario) {
-                return DropdownMenuItem<String>(
-                  value: usuario,
-                  child: Text(usuario),
+              value: idUsuarioSeleccionado,
+              items: usuarios.map((usuario) {
+                return DropdownMenuItem<int>(
+                  value: usuario['id'],
+                  child: Text(usuario['nombre']),
                 );
               }).toList(),
               onChanged: (value) {
                 setState(() {
-                  usuarioSeleccionado = value;
+                  idUsuarioSeleccionado = value;
                 });
               },
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
 
-            // Selector de tipo de queja
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: "Tipo de Queja"),
-              value: tipoSeleccionado,
-              items: tiposQueja.map((String tipo) {
-                return DropdownMenuItem<String>(
-                  value: tipo,
-                  child: Text(tipo),
+            // Dropdown con lista de usuarios al que se le hace la solicitud
+            DropdownButtonFormField<int>(
+              decoration: InputDecoration(
+                labelText: "Selecciona Usuario de Solicitud",
+                prefixIcon: Icon(Icons.supervised_user_circle),
+                border: OutlineInputBorder(),
+              ),
+              value: idUsuarioSolicitudSeleccionado,
+              items: usuariosSolicitud.map((usuario) {
+                return DropdownMenuItem<int>(
+                  value: usuario['id'],
+                  child: Text(usuario['nombre']),
                 );
               }).toList(),
               onChanged: (value) {
                 setState(() {
-                  tipoSeleccionado = value;
+                  idUsuarioSolicitudSeleccionado = value;
                 });
               },
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
+
+            // Dropdown con lista de tipos de queja (con ID)
+            DropdownButtonFormField<int>(
+              decoration: InputDecoration(
+                labelText: "Tipo de Queja",
+                prefixIcon: Icon(Icons.report_problem),
+                border: OutlineInputBorder(),
+              ),
+              value: idTipoSeleccionado,
+              items: tiposQueja.map((tipo) {
+                return DropdownMenuItem<int>(
+                  value: tipo['id'],
+                  child: Text(tipo['tipo']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  idTipoSeleccionado = value;
+                });
+              },
+            ),
+            SizedBox(height: 15),
 
             // Campo de descripción
             TextField(
@@ -131,6 +146,7 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
               decoration: InputDecoration(
                 labelText: "Descripción de la Queja",
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.description),
               ),
               maxLines: 4,
             ),
@@ -138,11 +154,12 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
 
             // Botón de enviar
             ElevatedButton.icon(
-              onPressed: () {
-                String nombreUsuario = _nombreUsuarioController.text;
+              onPressed: () async {
                 String descripcion = _descripcionController.text;
 
-                if (usuarioSeleccionado == null || descripcion.isEmpty) {
+                if (idUsuarioSeleccionado == null ||
+                    idUsuarioSolicitudSeleccionado == null ||
+                    descripcion.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Por favor, complete todos los campos."),
@@ -151,8 +168,29 @@ class _NuevaQuejaPageState extends State<NuevaQuejaPage> {
                   return;
                 }
 
-                print(
-                    "Queja de $nombreUsuario: $descripcion (Tipo: $tipoSeleccionado)");
+                try {
+                  // Llamar al método del controlador para registrar la queja
+                  await _quejaController.registrarQueja(
+                    idUsuarioSeleccionado!,
+                    idUsuarioSolicitudSeleccionado!,
+                    descripcion,
+                    idTipoSeleccionado!,
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Queja registrada con éxito."),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error al registrar la queja."),
+                    ),
+                  );
+                }
+
+                // Regresar a la pantalla anterior
                 Navigator.pop(context);
               },
               icon: Icon(Icons.send),

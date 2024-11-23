@@ -92,20 +92,21 @@ class AppDrawer extends StatelessWidget {
               children: [
                 DrawerTile(
                   icon: Icons.list,
-                  title:"Suscripciones",
+                  title: "Suscripciones",
                   onTap: () {
                     Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.suscripcionesPage);
+                        .changeCurrentScreen(
+                            CustomScreensEnum.suscripcionesPage);
                     Navigator.pop(context);
                   },
                 ),
                 DrawerTile(
                   icon: Icons.abc,
-                  title: 
-                  "Planes Suscripciones",
+                  title: "Planes Suscripciones",
                   onTap: () {
                     Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.planesSuscripcionPage);
+                        .changeCurrentScreen(
+                            CustomScreensEnum.planesSuscripcionPage);
                     Navigator.pop(context);
                   },
                 ),
@@ -133,6 +134,22 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
                       .changeCurrentScreen(CustomScreensEnum.quejasPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Profesionales',
+                icon: Icons.account_box,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.usuariosPage);
+                  Navigator.pop(context);
+                }),
+            DrawerTile(
+                title: 'Empresa',
+                icon: Icons.add_business,
+                onTap: () {
+                  Provider.of<DrawerScreenProvider>(context, listen: false)
+                      .changeCurrentScreen(CustomScreensEnum.empresasPage);
                   Navigator.pop(context);
                 }),
             DrawerTile(
