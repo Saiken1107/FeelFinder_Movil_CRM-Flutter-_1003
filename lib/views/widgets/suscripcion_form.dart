@@ -45,7 +45,7 @@ class _SuscripcionFormState extends State<SuscripcionForm> {
       });
     }
   }
-
+  
   void _submitForm() async {
     if (_clienteId == null || _planId == null || _estado == null || _fechaInicio == null || _fechaFin == null) {
       ScaffoldMessenger.of(context).showSnackBar(

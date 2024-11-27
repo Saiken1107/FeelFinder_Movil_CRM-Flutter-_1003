@@ -92,20 +92,21 @@ class AppDrawer extends StatelessWidget {
               children: [
                 DrawerTile(
                   icon: Icons.list,
-                  title:"Suscripciones",
+                  title: "Suscripciones",
                   onTap: () {
                     Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.suscripcionesPage);
+                        .changeCurrentScreen(
+                            CustomScreensEnum.suscripcionesPage);
                     Navigator.pop(context);
                   },
                 ),
                 DrawerTile(
                   icon: Icons.abc,
-                  title: 
-                  "Planes Suscripciones",
+                  title: "Planes Suscripciones",
                   onTap: () {
                     Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.planesSuscripcionPage);
+                        .changeCurrentScreen(
+                            CustomScreensEnum.planesSuscripcionPage);
                     Navigator.pop(context);
                   },
                 ),
@@ -136,29 +137,46 @@ class AppDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 }),
             DrawerTile(
-                title: 'Dashboard',
-                icon: Icons.stacked_line_chart,
+                title: 'Profesionales',
+                icon: Icons.account_box,
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.dashboardPage);
+                      .changeCurrentScreen(CustomScreensEnum.usuariosPage);
                   Navigator.pop(context);
                 }),
             DrawerTile(
-                title: 'Precios',
-                icon: Icons.price_change,
+                title: 'Empresa',
+                icon: Icons.add_business,
                 onTap: () {
                   Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.preciosPage);
+                      .changeCurrentScreen(CustomScreensEnum.empresasPage);
                   Navigator.pop(context);
                 }),
-            DrawerTile(
-                title: 'Oportunidades',
-                icon: Icons.handshake_rounded,
-                onTap: () {
-                  Provider.of<DrawerScreenProvider>(context, listen: false)
-                      .changeCurrentScreen(CustomScreensEnum.oportunidadesPage);
-                  Navigator.pop(context);
-                }),
+            // DrawerTile(
+            //     title: 'Dashboard',
+            //     icon: Icons.stacked_line_chart,
+            //     onTap: () {
+            //       Provider.of<DrawerScreenProvider>(context, listen: false)
+            //           .changeCurrentScreen(CustomScreensEnum.dashboardPage);
+            //       Navigator.pop(context);
+            //     }),
+            // DrawerTile(
+            //     title: 'Precios',
+            //     icon: Icons.price_change,
+            //     onTap: () {
+            //       Provider.of<DrawerScreenProvider>(context, listen: false)
+            //           .changeCurrentScreen(CustomScreensEnum.preciosPage);
+            //       Navigator.pop(context);
+            //     }),
+            // DrawerTile(
+            //     title: 'Oportunidades',
+            //     icon: Icons.handshake_rounded,
+            //     onTap: () {
+            //       Provider.of<DrawerScreenProvider>(context, listen: false)
+            //           .changeCurrentScreen(CustomScreensEnum.oportunidadesPage);
+            //       Navigator.pop(context);
+            //     }),
+
             DrawerTile(
               title: 'Cerrar Sesión',
               icon: Icons.logout,

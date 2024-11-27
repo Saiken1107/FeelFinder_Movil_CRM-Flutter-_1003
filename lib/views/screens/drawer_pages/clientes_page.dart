@@ -18,6 +18,12 @@ class _ClientesPageState extends State<ClientesPage> {
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _apellidoController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadClientes();
+  }
+
   void _loadClientes() async {
     try {
       final clientes = await clienteController.obtenerClientes();
@@ -33,32 +39,49 @@ class _ClientesPageState extends State<ClientesPage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadClientes();
-  }
-
   Future<void> _addCliente() async {
-    try {
-      await clienteController.registrarCliente(
-          _correoController.text, _nombreController.text, _apellidoController.text);
-      _loadClientes();
-      Navigator.of(context).pop();
-    } catch (e) {
-      _showError("No se pudo registrar el cliente: $e");
+    if (_validateForm()) {
+      try {
+        await clienteController.registrarCliente(
+          _correoController.text,
+          _nombreController.text,
+          _apellidoController.text,
+        );
+        _loadClientes();
+        Navigator.of(context).pop();
+        _showSuccess("Cliente agregado exitosamente.");
+      } catch (e) {
+        _showError("No se pudo registrar el cliente: $e");
+      }
     }
   }
 
   Future<void> _updateCliente(int id) async {
-    try {
-      await clienteController.actualizarCliente(
-          id, _correoController.text, _nombreController.text, _apellidoController.text);
-      _loadClientes();
-      Navigator.of(context).pop();
-    } catch (e) {
-      _showError("No se pudo actualizar el cliente: $e");
+    if (_validateForm()) {
+      try {
+        await clienteController.actualizarCliente(
+          id,
+          _correoController.text,
+          _nombreController.text,
+          _apellidoController.text,
+        );
+        _loadClientes();
+        Navigator.of(context).pop();
+        _showSuccess("Cliente actualizado exitosamente.");
+      } catch (e) {
+        _showError("No se pudo actualizar el cliente: $e");
+      }
     }
+  }
+
+  bool _validateForm() {
+    if (_correoController.text.isEmpty ||
+        _nombreController.text.isEmpty ||
+        _apellidoController.text.isEmpty) {
+      _showError("Todos los campos son obligatorios.");
+      return false;
+    }
+    return true;
   }
 
   void _deleteCliente(int id) async {
@@ -78,6 +101,15 @@ class _ClientesPageState extends State<ClientesPage> {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
       ),
     );
   }
@@ -105,43 +137,59 @@ class _ClientesPageState extends State<ClientesPage> {
             top: 16,
             bottom: MediaQuery.of(context).viewInsets.bottom + 16,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                isViewing ? 'Detalles del Cliente' : (id == null ? 'Agregar Cliente' : 'Actualizar Cliente'),
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: _correoController,
-                decoration: InputDecoration(labelText: 'Correo Electrónico'),
-                readOnly: isViewing,
-              ),
-              TextField(
-                controller: _nombreController,
-                decoration: InputDecoration(labelText: 'Nombre'),
-                readOnly: isViewing,
-              ),
-              TextField(
-                controller: _apellidoController,
-                decoration: InputDecoration(labelText: 'Apellido'),
-                readOnly: isViewing,
-              ),
-              if (!isViewing) // Mostrar el botón solo si no está en modo de visualización
-                SizedBox(height: 20),
-              if (!isViewing)
-                ElevatedButton(
-                  child: Text(id == null ? 'Agregar Cliente' : 'Actualizar Cliente'),
-                  onPressed: () async {
-                    if (id == null) {
-                      await _addCliente();
-                    } else {
-                      await _updateCliente(id);
-                    }
-                  },
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  isViewing
+                      ? 'Detalles del Cliente'
+                      : (id == null ? 'Agregar Cliente' : 'Actualizar Cliente'),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-            ],
+                SizedBox(height: 20),
+                TextField(
+                  controller: _correoController,
+                  decoration: InputDecoration(
+                    labelText: 'Correo Electrónico',
+                    border: OutlineInputBorder(),
+                  ),
+                  readOnly: isViewing,
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _nombreController,
+                  decoration: InputDecoration(
+                    labelText: 'Nombre',
+                    border: OutlineInputBorder(),
+                  ),
+                  readOnly: isViewing,
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _apellidoController,
+                  decoration: InputDecoration(
+                    labelText: 'Apellido',
+                    border: OutlineInputBorder(),
+                  ),
+                  readOnly: isViewing,
+                ),
+                if (!isViewing) ...[
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    child: Text(
+                        id == null ? 'Agregar Cliente' : 'Actualizar Cliente'),
+                    onPressed: () async {
+                      if (id == null) {
+                        await _addCliente();
+                      } else {
+                        await _updateCliente(id);
+                      }
+                    },
+                  ),
+                ],
+              ],
+            ),
           ),
         );
       },
@@ -154,33 +202,45 @@ class _ClientesPageState extends State<ClientesPage> {
       appBar: AppBar(title: Text("Clientes")),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _clientes.length,
-              itemBuilder: (context, index) {
-                final cliente = _clientes[index];
-                return ListTile(
-                  title: Text(cliente['nombre']),
-                  subtitle: Text(cliente['correoElectronico']),
-                  onTap: () => _showForm(id: cliente['id'], isViewing: true), // Mostrar detalles
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () => _showForm(id: cliente['id']),
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: _clientes.length,
+                itemBuilder: (context, index) {
+                  final cliente = _clientes[index];
+                  return Card(
+                    elevation: 3,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: ListTile(
+                      title: Text(
+                        cliente['nombre'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => _deleteCliente(cliente['id']),
+                      subtitle: Text(cliente['correoElectronico']),
+                      onTap: () =>
+                          _showForm(id: cliente['id'], isViewing: true),
+                      trailing: Wrap(
+                        spacing: 8,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () => _showForm(id: cliente['id']),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteCliente(cliente['id']),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
+                    ),
+                  );
+                },
+              ),
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showForm(),
-        child: Icon(Icons.add),
+        label: Text("Agregar"),
+        icon: Icon(Icons.add),
       ),
     );
   }

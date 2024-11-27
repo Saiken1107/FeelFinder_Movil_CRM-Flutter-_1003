@@ -6,9 +6,12 @@ import 'package:feelfinder_mobile/views/screens/drawer_pages/plan_suscripciones_
 import 'package:feelfinder_mobile/views/screens/drawer_pages/quejas_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/dashboard_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/oportunidades_page.dart';
-import 'package:feelfinder_mobile/views/screens/drawer_pages/precios_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/lista_precios_page.dart';
 import 'package:feelfinder_mobile/views/screens/drawer_pages/suscripciones_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/usuarios_page.dart';
+import 'package:feelfinder_mobile/views/screens/drawer_pages/ventas_page.dart';
 
+import 'package:feelfinder_mobile/views/screens/drawer_pages/empresas_page.dart';
 import 'package:flutter/material.dart';
 
 class DrawerScreenProvider extends ChangeNotifier {
@@ -33,8 +36,8 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentActions = [];
         break;
 
-      /*case CustomScreensEnum.ventasPage:
-        currentScreen = ventasPage();
+      /* case CustomScreensEnum.ventasPage:
+        currentScreen = const ventasPage();
         _currentString = "Usuario";
         _currentActions = [];
         break;*/
@@ -75,24 +78,51 @@ class DrawerScreenProvider extends ChangeNotifier {
         _currentActions = [];
         break;
 
+      case CustomScreensEnum.usuariosPage:
+        currentScreen = UsuariosPage();
+        _currentString = "Profesionales";
+        _currentActions = [];
+        break;
+
       case CustomScreensEnum.preciosPage:
-        currentScreen = const PreciosPage();
+        currentScreen = ListaPreciosPage();
         _currentString = "Precios";
         _currentActions = [];
         break;
 
       case CustomScreensEnum.dashboardPage:
-        currentScreen = const DashboardPage();
+        // currentScreen = const DashboardPage();
+        _currentString = "Dashboard";
+        _currentActions = [];
+        break;
+      case CustomScreensEnum.quejasPage:
+        currentScreen = QuejasPage();
+        _currentString = "Quejas";
+        _currentActions = [];
+        break;
+
+      case CustomScreensEnum.tablerorendimientopage:
+        // currentScreen = DashboardPage();
         _currentString = "Dashboard";
         _currentActions = [];
         break;
 
+      case CustomScreensEnum.oportunidadventaPage:
+        currentScreen = OportunidadesPage();
+        _currentString = "Oportunidades";
+        _currentActions = [];
+        break;
       case CustomScreensEnum.oportunidadesPage:
         currentScreen = const OportunidadesPage();
         _currentString = "Oportunidades";
         _currentActions = [];
         break;
 
+      case CustomScreensEnum.empresasPage:
+        currentScreen = EmpresasPage();
+        _currentString = "Empresas";
+        _currentActions = [];
+        break;
       default:
         currentScreen = const HomePage();
         _currentString = "Inicio";
@@ -105,13 +135,20 @@ class DrawerScreenProvider extends ChangeNotifier {
 
 enum CustomScreensEnum {
   homePage,
+  listapreciosPage,
   planesSuscripcionPage,
   suscripcionesPage,
   pagosPage,
+  cotizacionPage,
   clientesPage,
+  tablerorendimientopage,
   cotizacionesPage,
+  oportunidadventaPage,
   quejasPage,
   dashboardPage,
   preciosPage,
   oportunidadesPage,
+  usuariosPage,
+  empresasPage,
+  actividadespage
 }

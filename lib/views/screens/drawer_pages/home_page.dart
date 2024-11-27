@@ -1,6 +1,6 @@
-import 'package:feelfinder_mobile/providers/drawer_screen_provider.dart';
+import 'package:feelfinder_mobile/controllers/dashboard_controller.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,143 +13,126 @@ class HomePage extends StatefulWidget {
 // String _stringNombre = "";
 
 class _HomePageState extends State<HomePage> {
-  //final ejemploPeticionController = EjemploHTTPGetController();
-  //UsuarioController usuarioController = UsuarioController();
-
-  void _refreshData() async {
-    // final data = await usuarioController.obtenerUnUsuario(_boxLogin.get("userId"));
-
-    setState(() {
-      // _stringNombre = data[0]['nombre'];
-    });
-  }
+  final DashboardController _dashboardController = DashboardController();
+  bool _isLoading = true;
+  Map<String, dynamic>? _dashboardData;
 
   @override
   void initState() {
     super.initState();
-    _refreshData();
+    _loadDashboardData();
+  }
+
+  Future<void> _loadDashboardData() async {
+    try {
+      final data = await _dashboardController.getDashboardData();
+      setState(() {
+        _dashboardData = data;
+        _isLoading = false;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Error al cargar los datos del dashboard")),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(40),
-                  bottomRight: Radius.circular(40),
-                ),
-                boxShadow: const [
-                  BoxShadow(
-                      blurRadius: 2, spreadRadius: 1, color: Colors.blueGrey)
-                ],
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+      appBar: AppBar(title: const Text("Dashboard")),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Bienvenido",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.w300,
-                      color: Theme.of(context).colorScheme.surface,
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      "Comparación: Cotizaciones vs Suscripciones",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
+                  _buildBarChart(),
+                  const SizedBox(height: 16),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      "Suscripciones por Tipo de Plan",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  _buildPieChart(),
                 ],
               ),
             ),
-            Expanded(
-              child: GridView(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: MediaQuery.of(context).size.height / 3.8,
-                ),
-                children: [
-                  BotonMenu(
-                    texto: "Ventas",
-                    icono: Icons.book,
-                    onTap: () {
-                      // Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.ventasPage);
-                    },
-                  ),
-                  BotonMenu(
-                    texto: "Clientes",
-                    icono: Icons.group,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false).changeCurrentScreen(CustomScreensEnum.clientesPage);
-                    },
-                  ),
-                  BotonMenu(
-                    texto: "Cotizaciones",
-                    icono: Icons.contact_phone,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false)
-                          .changeCurrentScreen(
-                              CustomScreensEnum.cotizacionesPage);
-                    },
-                  ),
-                  BotonMenu(
-                    texto: "Quejas",
-                    icono: Icons.person,
-                    onTap: () {
-                      Provider.of<DrawerScreenProvider>(context, listen: false)
-                          .changeCurrentScreen(CustomScreensEnum.quejasPage);
-                    },
-                  ),
-                ],
+    );
+  }
+
+  Widget _buildBarChart() {
+    final totalCotizaciones = _dashboardData!['totalCotizaciones'];
+    final totalSuscripciones = _dashboardData!['totalSuscripciones'];
+
+    return SizedBox(
+      height: 200,
+      child: BarChart(
+        BarChartData(
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  switch (value.toInt()) {
+                    case 0:
+                      return const Text('Cotizaciones');
+                    case 1:
+                      return const Text('Suscripciones');
+                    default:
+                      return const Text('');
+                  }
+                },
+                reservedSize: 30,
               ),
+            ),
+            
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          ),
+          barGroups: [
+            BarChartGroupData(
+              x: 0,
+              barRods: [BarChartRodData(toY: totalCotizaciones.toDouble())],
+              showingTooltipIndicators: [0],
+            ),
+            BarChartGroupData(
+              x: 1,
+              barRods: [BarChartRodData(toY: totalSuscripciones.toDouble())],
+              showingTooltipIndicators: [0],
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class BotonMenu extends StatelessWidget {
-  final Function()? onTap;
-  final IconData? icono;
-  final String? texto;
+  Widget _buildPieChart() {
+    final suscripcionesPorPlan = _dashboardData!['suscripcionesPorPlan'];
 
-  const BotonMenu({super.key, this.icono, this.onTap, this.texto});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: ElevatedButton(
-        onPressed: onTap, //Aqui se inserta la funcion recibida como argumento
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              icono, //Dato del icono
-              size: 50,
-            ),
-            Text(
-              texto!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 18,
-                  shadows: [Shadow(color: Colors.white, offset: Offset(0, 0))]),
-            )
-          ],
+    return SizedBox(
+      height: 200,
+      child: PieChart(
+        PieChartData(
+          sections: suscripcionesPorPlan.map<PieChartSectionData>((plan) {
+            return PieChartSectionData(
+              value: plan['cantidad'].toDouble(),
+              title: plan['planNombre'],
+              radius: 50,
+            );
+          }).toList(),
         ),
       ),
     );
