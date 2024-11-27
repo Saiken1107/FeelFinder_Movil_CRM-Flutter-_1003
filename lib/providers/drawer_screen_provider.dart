@@ -91,7 +91,7 @@ class DrawerScreenProvider extends ChangeNotifier {
         break;
 
       case CustomScreensEnum.dashboardPage:
-        currentScreen = const DashboardPage();
+        // currentScreen = const DashboardPage();
         _currentString = "Dashboard";
         _currentActions = [];
         break;
@@ -102,7 +102,7 @@ class DrawerScreenProvider extends ChangeNotifier {
         break;
 
       case CustomScreensEnum.tablerorendimientopage:
-        currentScreen = DashboardPage();
+        // currentScreen = DashboardPage();
         _currentString = "Dashboard";
         _currentActions = [];
         break;
